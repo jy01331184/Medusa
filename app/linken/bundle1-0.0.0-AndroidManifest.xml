@@ -16,6 +16,14 @@
         </activity>
         <activity android:name="com.bundle1.Bundle1Activity2" >
         </activity>
+
+        <service android:name="com.bundle1.Bundle1Service" />
+
+        <receiver android:name="com.bundle1.Bundle1Receiver" >
+            <intent-filter>
+                <action android:name="android.intent.action.LOCALE_CHANGED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

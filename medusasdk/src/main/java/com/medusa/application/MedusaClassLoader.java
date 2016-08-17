@@ -57,7 +57,7 @@ public class MedusaClassLoader extends PathClassLoader {
                     return cls;
                 }
             }
-            else if(bundle.priority < Constant.PRIORITY_LAZY){
+            else if(bundle.priority <= Constant.PRIORITY_LAZY){
                 BundleExecutor.getInstance().loadBundle(this,bundle);
                 if(bundle.loaded && bundle.classLoader != null)
                 {

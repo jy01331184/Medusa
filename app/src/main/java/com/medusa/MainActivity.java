@@ -43,10 +43,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                     Intent intent = new Intent();
+                    Intent intent = new Intent();
                     intent.setClassName(MainActivity.this, "medusa.com.bundle3.Bundle3Activity");
 
                     startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        findViewById(R.id.btn4).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    Intent intent = new Intent();
+                    intent.setClassName(MainActivity.this, "com.bundle1.Bundle1Service");
+
+                    startService(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

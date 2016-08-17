@@ -121,8 +121,8 @@ public class BundleUtil {
                 for(int j = 0;j < nodeChilds.getLength();j++)
                 {
                     Node appNode = nodeChilds.item(j);
-
-                    if(appNode.getNodeName().equals("activity"))
+                    String nodeName = appNode.getNodeName();
+                    if(nodeName.equals("activity") || nodeName.equals("service") || nodeName.equals("receiver"))
                     {
                         NamedNodeMap attrs = appNode.getAttributes();
 
