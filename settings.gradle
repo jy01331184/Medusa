@@ -1,1 +1,2 @@
-include ':app', ':medusaplugin', ':bundle1','bundle2','bundle3', ':medusasdk'
+//include ':app', ':medusaplugin', ':bundle1','bundle2','bundle3', ':medusasdk'
+include ':medusaplugin'
