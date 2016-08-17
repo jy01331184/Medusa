@@ -1,0 +1,36 @@
+apply plugin: 'com.android.application'
+apply plugin: 'maven'
+apply plugin: 'medusa.bundle'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "medusa.com.bundle3"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        medusaCfg {
+            storeFile file("../medusa.keystore")
+            storePassword "3666161"
+            keyAlias "medusa.keystore"
+            keyPassword "3666161"
+        }
+    }
+    buildTypes {
+        release {
+            signingConfig signingConfigs.medusaCfg
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.medusa.sdk:medusasdk:1.0.0@jar'
+}

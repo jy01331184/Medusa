@@ -1,0 +1,44 @@
+apply plugin: 'com.android.application'
+apply plugin: 'medusa.rapier'
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        applicationId "com.medusa"
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    signingConfigs {
+        medusaCfg {
+            storeFile file("../medusa.keystore")
+            storePassword "3666161"
+            keyAlias "medusa.keystore"
+            keyPassword "3666161"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.medusaCfg
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main.jniLibs.srcDirs = ['libs']
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.medusa.sdk:medusasdk:1.0.0@aar'
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+
+}
+
+

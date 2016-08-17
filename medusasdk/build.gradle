@@ -1,0 +1,72 @@
+import org.gradle.api.internal.artifacts.DefaultPublishArtifactSet
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultLocalMavenRepositoryLocator
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenFileLocations
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenSettingsProvider
+import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator
+import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
+
+apply plugin: 'com.android.library'
+apply plugin: 'maven'
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.google.code.gson:gson:2.7'
+}
+
+group='com.medusa.sdk'
+version='1.0.0'
+def mavenLocalRepo = ''
+
+afterEvaluate{
+
+    DefaultMavenFileLocations locations = new DefaultMavenFileLocations()
+    DefaultMavenSettingsProvider provider = new DefaultMavenSettingsProvider(locations)
+    LocalMavenRepositoryLocator locator = new DefaultLocalMavenRepositoryLocator(provider)
+
+    mavenLocalRepo = locator.localMavenRepository.absolutePath
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository (url: uri(mavenLocalRepo))
+            }
+        }
+    }
+
+    Task uploadArchivesTask = tasks.findByName("uploadArchives")
+    uploadArchivesTask.doFirst {
+        Date date = new Date()
+        def minify = true
+        android.buildTypes.each {
+            if (it.name.equals("release")) {
+                minify = it.minifyEnabled
+            }
+        }
+        DefaultPublishArtifactSet ass = it.configuration.getArtifacts()
+
+        Task transformDex = tasks.findByName('transformClassesAndResourcesWithSyncLibJarsForRelease')
+        transformDex.outputs.files.files.each {
+            if(it.name.contains("/classes.jar"))
+            {
+                DefaultPublishArtifact jarFileArtifact = new DefaultPublishArtifact('', 'jar', 'jar', '', date, it, new Object[0])
+                ass.add(jarFileArtifact)
+            }
+        }
+    }
+}

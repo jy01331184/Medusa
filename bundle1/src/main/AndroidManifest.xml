@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest package="com.bundle1"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+         >
+        <activity android:name=".Bundle1Activity">
+        </activity>
+        <activity android:name=".Bundle1Activity2">
+
+        </activity>
+    </application>
+
+</manifest>

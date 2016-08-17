@@ -1,0 +1,16 @@
+<manifest package="com.medusa.sdk"
+          xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application
+
+        >
+        <activity
+
+
+            android:name="com.medusa.application.LazyLoadActivity">
+
+
+        </activity>
+    </application>
+
+</manifest>

@@ -1,0 +1,43 @@
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultLocalMavenRepositoryLocator
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenFileLocations
+import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenSettingsProvider
+import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator
+
+apply plugin: 'groovy'
+apply plugin: 'maven'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'com.android.tools.build:gradle:1.5.0'
+    //compile 'org.javassist:javassist:3.20.0-GA'
+    compile group: 'org.json', name: 'json', version: '20160212'
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+group='com.medusa.plugin'
+version='1.0.0'
+def mavenLocalRepo = ''
+
+
+afterEvaluate{
+    DefaultMavenFileLocations locations = new DefaultMavenFileLocations()
+    DefaultMavenSettingsProvider provider = new DefaultMavenSettingsProvider(locations)
+    LocalMavenRepositoryLocator locator = new DefaultLocalMavenRepositoryLocator(provider)
+
+    mavenLocalRepo = locator.localMavenRepository.absolutePath
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                repository (url: uri(mavenLocalRepo))
+            }
+        }
+    }
+}
+
+
+
