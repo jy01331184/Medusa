@@ -21,10 +21,14 @@
 3.  添加app、bundle1、bundle2、bundle3进来。bundle项目可以直接调用bundle分组下的installBundleLocal或者installBundleRemote来打本地包或者远程包(本地包远程包的概念后面会说)。app项目调用bundle分组下的assemableRapier生成安装包、installRapier生成并安装安装包。
 
 #### 概念
-主集成项目：在medusa下被命名为rapier(圣剑)，可以继承多个bundle的标准android工程。
-插件项目：在medusa下被命名为bundle，bundle之间可以依赖，也是标准的android工程。
-sdk：为bundle和rapier提供支持，如bundle中的activity需要继承sdk中得BundleActivity等等。
-plugin：rapier工程需要引用RapierPlugin，bundle工程需要引用BundlePlugin。自动化整个构建过程，只需要点击执行一个gradle task就可以完成所有的构建，具体的构建流程后面会介绍。
+主集成项目：在medusa下被命名为rapier(圣剑)，可以继承多个bundle的标准android工程。  
+
+插件项目：在medusa下被命名为bundle，bundle之间可以依赖，也是标准的android工程。  
+
+sdk：为bundle和rapier提供支持，如bundle中的activity需要继承sdk中得BundleActivity等等。  
+
+plugin：rapier工程需要引用RapierPlugin，bundle工程需要引用BundlePlugin。自动化整个构建过程，只需要点击执行一个gradle task就可以完成所有的构建，具体的构建流程后面会介绍。  
+
 maven：为方便运行，所有的bundle、sdk、plugin目前都上传到本地maven仓库中，如果没有修改$MAVEN_HOME/conf/settings.xml，默认地址为 ~/.m2
 
 
