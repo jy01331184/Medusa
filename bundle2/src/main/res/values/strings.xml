@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Bundle2</string>
     <string name="str">this is bundle2 s widget</string>
+    <string name="a">this is bundle2 s widget</string>
+    <string name="b">this is bundle2 s widget</string>
+    <string name="c">this is bundle2 s widget</string>
 </resources>

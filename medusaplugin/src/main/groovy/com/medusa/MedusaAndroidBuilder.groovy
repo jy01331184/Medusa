@@ -77,6 +77,7 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
 
         super.mergeManifests(mainManifest, manifestOverlays, libraries, packageOverride, versionCode, versionName, minSdkVersion, targetSdkVersion, maxSdkVersion, outManifestLocation, outAaptSafeManifestLocation, mergeType, placeHolders, reportFile)
 
+
     }
 
     private void aapt(AaptPackageProcessBuilder aaptCommand) {
@@ -144,6 +145,8 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
         def mArgs = ['package', '--no-crunch', '-f', '-m', '-J', rOutputDir, '-S', resDir, '-I',
                      androidJar, '-M', manifestDir, '--apk-module', packageId, '-F', apOutPutDir, '-0', 'apk', '--debug-mode',
                      "-A", assetDir]
+        if(android.aaptOptions.additionalParameters != null)
+            mArgs.addAll(android.aaptOptions.additionalParameters)
 
         if (!Utils.isEmpty(extraPackage)) {
             mArgs.add('--extra-packages')

@@ -31,7 +31,6 @@ public class MedusaApplication extends Application {
 
     private void setUpClassLoader() {
         classLoader = new MedusaClassLoader(this, getApplicationInfo().sourceDir, ClassLoader.getSystemClassLoader(), getClassLoader());
-
         ReflectUtil.setBoostClassLoader(this, classLoader);
         ReflectUtil.replaceInstrumentation();
     }

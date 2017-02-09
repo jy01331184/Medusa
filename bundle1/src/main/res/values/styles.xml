@@ -1,4 +1,6 @@
 <resources>
+    <style name="mstyle" parent="@android:style/Theme.Holo">
 
+    </style>
 
 </resources>

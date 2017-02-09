@@ -1,8 +1,11 @@
 package com.medusa.plugin
 
 import com.android.build.gradle.TestedExtension
+import com.android.build.gradle.internal.dsl.AaptOptions
 import com.android.build.gradle.internal.tasks.BaseTask
 import com.android.builder.core.AndroidBuilder
+import com.medusa.Constant
+import com.medusa.HookedDependencySet
 import com.medusa.MedusaAndroidBuilder
 import com.medusa.model.BundleModel
 import com.medusa.task.AddBundleMFTask
@@ -12,12 +15,17 @@ import com.medusa.util.Log
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
+import org.gradle.api.artifacts.Configuration
+import org.gradle.api.internal.artifacts.DefaultDependencySet
 import org.gradle.api.internal.artifacts.DefaultPublishArtifactSet
+import org.gradle.api.internal.artifacts.configurations.DefaultConfiguration
 import org.gradle.api.internal.artifacts.mvnsettings.DefaultLocalMavenRepositoryLocator
 import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenFileLocations
 import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenSettingsProvider
 import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
 import org.gradle.jvm.tasks.Jar
+
+import java.lang.reflect.Field
 
 public class BundlePlugin implements Plugin<Project> {
 
@@ -27,6 +35,7 @@ public class BundlePlugin implements Plugin<Project> {
     BaseMedusaTask addBundleMF ;
 
     static final String LOCAL_VERSION = '0.0.0'
+    static final String REMOTE_MAVEN_URL = "http://localhost:8081/repository/maven-releases/"
 
     @Override
     void apply(Project o) {
@@ -36,8 +45,11 @@ public class BundlePlugin implements Plugin<Project> {
         readBundleProp.init(o)
         readBundleProp.execute(null, null)
         BundleModel bundleModel = readBundleProp.getResult()
-        println("bundle:"+bundleModel+'-->'+this.toString())
+        println("bundle plugin:"+Constant.PLUGIN_VERSION+"    bundle:"+bundleModel+'-->'+this.toString())
+        o.configurations.create('bundle')
 
+        makePublicXml(o)
+        makeAaptParms(o)
 
         Task bundleTask = o.task('assembleBundle')
         Task readBundlePropTask = o.task('readBundlePropTask')
@@ -60,6 +72,9 @@ public class BundlePlugin implements Plugin<Project> {
         makeInstallBundleLocal(o, bundleTask,bundleModel)
         makeInstallBundleRemote(o, bundleTask,bundleModel)
         o.afterEvaluate {
+
+
+
             hookProcessResource(o, o.tasks.findByName("processReleaseResources"))
             o.tasks.matching {it.name.startsWith("lintVital")}.each {
                 Log.log("BundlePlugin","disable lint "+it.name)
@@ -158,7 +173,10 @@ public class BundlePlugin implements Plugin<Project> {
             project.uploadArchives {
                 repositories {
                     mavenDeployer {
-                        repository(url: project.uri(defaultLocalMavenRepositoryLocator.localMavenRepository.absolutePath))
+                        //repository(url: project.uri(defaultLocalMavenRepositoryLocator.localMavenRepository.absolutePath))
+                        repository (url: REMOTE_MAVEN_URL){
+                            authentication(userName: "admin", password: "123")
+                        }
                         pom.version = bundleModel.version
                         pom.artifactId = bundleModel.name
                         pom.groupId = bundleModel.group
@@ -191,6 +209,53 @@ public class BundlePlugin implements Plugin<Project> {
                     }
                 }
             }
+        }
+    }
+
+    private void makePublicXml(Project project){
+        project.afterEvaluate{
+            for (variant in android.applicationVariants) {
+                def scope = variant.getVariantData().getScope()
+                String mergeTaskName = scope.getMergeResourcesTask().name
+                Task mergeTask = project.tasks.getByName(mergeTaskName)
+
+                mergeTask.doLast {
+                    project.copy {
+                        int i=0
+                        from(android.sourceSets.main.res.srcDirs) {
+                            include 'values/public.xml'
+                            rename 'public.xml', (i++ == 0? "public.xml": "public_${i}.xml")
+                        }
+
+                        into(mergeTask.outputDir)
+                    }
+                }
+            }
+        }
+    }
+
+    private void makeAaptParms(Project project){
+
+        Configuration bundleConf = project.configurations.getByName('bundle')
+
+        DefaultDependencySet hookedSet = new HookedDependencySet(project,bundleConf.dependencies)
+        Field filed = DefaultConfiguration.class.getDeclaredField('dependencies')
+        filed.setAccessible(true)
+        filed.set(bundleConf,hookedSet)
+
+        project.afterEvaluate {
+            AaptOptions opt = android.aaptOptions
+            project.configurations.each {
+                if(it.name.startsWith("bundle")){
+                    List<String> parms = new ArrayList<>()
+                    it.files.each {
+                        parms.add('-I')
+                        parms.add(it.absolutePath)
+                    }
+                    opt.setAdditionalParameters(parms)
+                }
+            }
+            Log.log('BundlePlugin', 'add aapt parm:' + opt.additionalParameters)
         }
     }
 }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">bundle3</string>
+    <string name="bundle">hello bundle 3</string>
 </resources>

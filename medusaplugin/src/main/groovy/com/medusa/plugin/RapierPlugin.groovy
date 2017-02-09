@@ -6,6 +6,7 @@ import com.android.builder.core.AndroidBuilder
 import com.android.ide.common.xml.AndroidManifestParser
 import com.android.io.FolderWrapper
 import com.android.xml.AndroidManifest
+import com.medusa.Constant
 import com.medusa.MedusaAndroidBuilder
 import com.medusa.task.BaseMedusaTask
 import com.medusa.task.PrepareBundleTask
@@ -25,6 +26,7 @@ public class RapierPlugin implements Plugin<Project> {
         Task installRapierTask = o.task('installRapier')
 
         android = o.extensions.findByName("android")
+        println("rapier plugin:"+Constant.PLUGIN_VERSION)
 
         assemableRapierTask.group = 'bundle'
         installRapierTask.group = 'bundle'
@@ -42,9 +44,10 @@ public class RapierPlugin implements Plugin<Project> {
                     {
                         def data = AndroidManifestParser.parse(AndroidManifest.getManifest(new FolderWrapper(it.parentFile)))
                         def mArgs = ['shell','am','start','-n',data.package+"/"+data.launcherActivity.name,'-a','android.intent.action.MAIN','-c','android.intent.category.LAUNCHER']
-                        Log.log("RapierPlugin",'adb install args:'+mArgs)
+                        Log.log("RapierPlugin",'adb install'+android.adbExe.absolutePath+ ' args:'+mArgs)
+
                         o.exec {
-                            executable = 'adb'
+                            executable = android.adbExe.absolutePath
                             args = mArgs
                         }
                     }
@@ -152,8 +155,13 @@ public class RapierPlugin implements Plugin<Project> {
             if(it.absolutePath.contains('intermediates/assets/release'))
             {
                 Log.log("RapierPlugin","hookMergeAssets add bundle.json to"+it.absolutePath)
-                FileWriter writer = new FileWriter(it.absolutePath+"/bundle.json")
+                Log.log("RapierPlugin","bundle.json:"+json)
+                File file = new File(it.absolutePath+"/bundle.json")
+                if(!file.getParentFile().exists())
+                    file.getParentFile().mkdirs()
+                FileWriter writer = new FileWriter(file)
                 writer.write(json)
+                writer.flush()
                 writer.close()
             }
         }

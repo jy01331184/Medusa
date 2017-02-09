@@ -10,6 +10,6 @@ public class Bundle3Activity extends BundleActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bundle3);
-
+        Bundle3Init.test();
     }
 }

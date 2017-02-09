@@ -5,13 +5,19 @@ apply plugin: 'medusa.bundle'
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
-
+    aaptOptions{
+        //additionalParameters '-P','/Users/tianyang/AndroidStudioProjects/MyApplication/bundle2/src/main/res/values/public.xml'
+    }
     defaultConfig {
         applicationId "com.bundle2"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+    }
+    sourceSets {
+
+        main.res.srcDirs = ['src/main/res']
     }
     signingConfigs {
         medusaCfg {
@@ -33,5 +39,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.medusa.sdk:medusasdk:1.0.0@jar'
+    provided 'com.medusa.sdk:medusasdk:1.0.1@jar'
+    //bundle 'com.bundle3:bundle3:1.0.2@apk'
 }
+

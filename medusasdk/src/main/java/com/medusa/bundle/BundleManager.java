@@ -76,7 +76,7 @@ public class BundleManager {
 
             for (Bundle bundle : bundleConfig.bundles) {
                 File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundle.path);
-                BundleUtil.sycnBundle(originBundleFile,bundle);
+                BundleUtil.syncBundle(originBundleFile,bundle);
             }
             bundleConfig.sourceMd5 = MD5Util.genFileMd5sum(new File(MedusaApplication.getInstance().getApplicationInfo().sourceDir));
             save();
@@ -159,11 +159,11 @@ public class BundleManager {
             if (bundle.isLocalBundle()) //如果是本地bundle 则判断是否需要替换apk
             {
                 File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundle.path);
-                if (originBundleFile.exists() && !MD5Util.genFileMd5sum(originBundleFile).equals(bundle.md5)) //本地budnle存在更新
+                if (originBundleFile.exists() && !MD5Util.genFileMd5sum(originBundleFile).equals(bundle.md5)) //本地bundle存在更新
                 {
                     Log.log("BundleManager", "subsitute local bundle " + bundle.artifactId + " from" + originBundleFile.getAbsolutePath());
                     FileUtil.copyFile(new FileInputStream(originBundleFile).getChannel(), bundleFile.getAbsolutePath());
-                    BundleUtil.sycnBundle(bundleFile,bundle);
+                    BundleUtil.syncBundle(bundleFile,bundle);
                     bundle.activities = bundleInAsset.activities;
                     change = true;
                 }
@@ -179,7 +179,7 @@ public class BundleManager {
                         dexOptFile.delete();
                     bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundleInAsset));
                     FileUtil.copyFile(new FileInputStream(originBundleFile).getChannel(), bundleFile.getAbsolutePath());
-                    BundleUtil.sycnBundle(bundleFile,bundle);
+                    BundleUtil.syncBundle(bundleFile,bundle);
                     bundle.activities = bundleInAsset.activities;
                     bundle.version = bundleInAsset.version;
                     bundle.path = bundleInAsset.path;
@@ -213,7 +213,7 @@ public class BundleManager {
                 FileUtil.copyFile(new FileInputStream(file).getChannel(), bundleFile.getAbsolutePath());
 
                 Log.log("BundleManager", "copy bundle " + bundle.artifactId + " to" + bundleFile.getAbsolutePath());
-                BundleUtil.sycnBundle(bundleFile,bundle);
+                BundleUtil.syncBundle(bundleFile,bundle);
 
                 change = true;
             } else {

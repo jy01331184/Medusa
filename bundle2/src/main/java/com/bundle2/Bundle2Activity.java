@@ -1,5 +1,6 @@
 package com.bundle2;
 
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -17,12 +18,15 @@ public class Bundle2Activity extends BundleActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    Toast.makeText(getApplicationContext(),"hello Medusa",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(),getString(R.string.app_name),Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         });
+
+        BitmapFactory.Options options = new BitmapFactory.Options();
+
 
     }
 }

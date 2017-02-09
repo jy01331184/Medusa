@@ -20,7 +20,7 @@ repositories {
 }
 
 group='com.medusa.plugin'
-version='1.0.0'
+version='1.0.1'
 def mavenLocalRepo = ''
 
 
@@ -33,7 +33,10 @@ afterEvaluate{
     uploadArchives {
         repositories {
             mavenDeployer {
-                repository (url: uri(mavenLocalRepo))
+//                repository (url: uri(mavenLocalRepo))
+                repository (url: 'http://localhost:8081/repository/maven-releases/'){
+                    authentication(userName: "admin", password: "123")
+                }
             }
         }
     }

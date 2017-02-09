@@ -28,7 +28,7 @@ public class BundleUtil {
      * @param bundleFile
      * @param bundle
      */
-    public static void sycnBundle(File bundleFile,Bundle bundle)
+    public static void syncBundle(File bundleFile, Bundle bundle)
     {
         try {
             ZipFile zipFile = new ZipFile(bundleFile);

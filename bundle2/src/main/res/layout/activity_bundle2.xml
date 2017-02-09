@@ -8,15 +8,16 @@
     >
 
     <TextView
+
         android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Hello World! this is bundle2"/>
-
+    <!--android:text="@medusa.com.bundle3:string/bundle"-->
     <Button
         android:layout_centerInParent="true"
         android:id="@+id/btn"
-        android:text="hello medusa"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </RelativeLayout>

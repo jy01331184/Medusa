@@ -31,7 +31,7 @@ dependencies {
 }
 
 group='com.medusa.sdk'
-version='1.0.0'
+version='1.0.1'
 def mavenLocalRepo = ''
 
 afterEvaluate{
@@ -44,7 +44,10 @@ afterEvaluate{
     uploadArchives {
         repositories {
             mavenDeployer {
-                repository (url: uri(mavenLocalRepo))
+                //repository (url: uri(mavenLocalRepo))
+                repository (url: 'http://localhost:8081/repository/maven-releases/'){
+                    authentication(userName: "admin", password: "123")
+                }
             }
         }
     }
@@ -62,10 +65,11 @@ afterEvaluate{
 
         Task transformDex = tasks.findByName('transformClassesAndResourcesWithSyncLibJarsForRelease')
         transformDex.outputs.files.files.each {
-            if(it.name.contains("/classes.jar"))
+            if(it.name.contains("classes.jar"))
             {
                 DefaultPublishArtifact jarFileArtifact = new DefaultPublishArtifact('', 'jar', 'jar', '', date, it, new Object[0])
                 ass.add(jarFileArtifact)
+                println("==="+it.absolutePath)
             }
         }
     }

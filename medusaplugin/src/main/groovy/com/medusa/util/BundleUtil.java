@@ -53,7 +53,7 @@ public class BundleUtil {
                 {
                     String[] arr = line.split(":");
                     String groupId = arr[0];
-                    String artifactId = arr[1];
+                    final String artifactId = arr[1];
                     String version = arr[2];
 
                     BundleProperty property = new BundleProperty();

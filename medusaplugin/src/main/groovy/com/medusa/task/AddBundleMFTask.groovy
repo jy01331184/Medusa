@@ -58,17 +58,17 @@ public class AddBundleMFTask extends BaseMedusaTask{
 
         bufferedWriter.writeLine(bundleModel.raw)
 
-        Configuration depConfig = project.configurations.findByName("provided")
+        Configuration depConfig = project.configurations.getByName("bundle")
 
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("dependency=")
         boolean firstFlag = true;
 
         depConfig.allDependencies.each {
-            println(it.toString())
             stringBuilder.append((firstFlag?"":",")+it.name)
             firstFlag = false;
         }
+        Log.log(this,'bundle '+stringBuilder.toString())
         bufferedWriter.writeLine(stringBuilder.toString())
         Log.log(this,'write BUNDLE.MF TO TEMP :'+file.absolutePath)
         bufferedWriter.close()
