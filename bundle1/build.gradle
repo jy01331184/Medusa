@@ -35,6 +35,8 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'com.medusa.sdk:medusasdk:1.0.1@jar'
+    bundle 'com.bundle2:bundle2:1.0.2@apk'
+    bundle 'com.bundle3:bundle3:1.0.2@apk'
 }
 
 

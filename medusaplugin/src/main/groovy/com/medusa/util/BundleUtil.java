@@ -2,6 +2,7 @@ package com.medusa.util;
 
 import com.medusa.model.BundleProperty;
 
+import org.gradle.api.Project;
 import org.json.JSONArray;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -13,9 +14,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -32,25 +33,20 @@ public class BundleUtil {
 //        System.out.println(str);
 //    }
 
-    public static String readBundleProperty(File mergeFile,File linkenDir)
-    {
+    public static String readBundleProperty(Project project, File mergeFile) {
         List<BundleProperty> properties = new ArrayList<>();
 
-        if(mergeFile == null || !mergeFile.exists())
+        if (mergeFile == null || !mergeFile.exists())
             throw new BundleException("mergeFile not exist!");
-        if(linkenDir == null || !linkenDir.exists())
-            throw new BundleException("linkenDir not exist!");
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(mergeFile));
 
             String line = null;
 
-            while( (line = reader.readLine()) != null )
-            {
+            while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if(!Utils.isEmpty(line))
-                {
+                if (!Utils.isEmpty(line)) {
                     String[] arr = line.split(":");
                     String groupId = arr[0];
                     final String artifactId = arr[1];
@@ -61,22 +57,13 @@ public class BundleUtil {
                     property.artifactId = artifactId;
                     property.version = version;
 
-                    File[] files = linkenDir.listFiles(new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
+                    property.path = "lib"+artifactId+"-"+version+".so";
 
-                            if( ("lib"+artifactId).equals(name.split("-")[0]))
-                                return true;
-
-                            return artifactId.equals(name.split("-")[0]);
-                        }
-                    });
-
-                    for (File file : files) {
-                        if(file.getName().endsWith(".xml"))
+                    Set<File> bundleDeps = project.getConfigurations().getByName("bundle").getFiles();
+                    for (File file : bundleDeps) {
+                        if (file.getName().equals(artifactId + "-" + version + "-" + "AndroidManifest.xml")) {
                             property.activities = parseActivities(file);
-                        else if(file.getName().endsWith(".so"))
-                            property.path = file.getName();
+                        }
                     }
 
                     properties.add(property);
@@ -85,8 +72,7 @@ public class BundleUtil {
 
             reader.close();
 
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -99,38 +85,31 @@ public class BundleUtil {
         return jsonArray.toString();
     }
 
-    private static List<String> parseActivities(File manifest) throws Exception
-    {
+    private static List<String> parseActivities(File manifest) throws Exception {
         List<String> activities = new ArrayList<>();
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder=factory.newDocumentBuilder();
+        DocumentBuilder builder = factory.newDocumentBuilder();
         FileInputStream input = new FileInputStream(manifest);
         Document doc = builder.parse(input);
 
         Element root = doc.getDocumentElement();
         NodeList childs = root.getChildNodes();
 
-        for (int i = 0;i<childs.getLength();i++)
-        {
+        for (int i = 0; i < childs.getLength(); i++) {
             Node node = childs.item(i);
-            if(node.getNodeName().equals("application"))
-            {
+            if (node.getNodeName().equals("application")) {
                 NodeList nodeChilds = node.getChildNodes();
 
-                for(int j = 0;j < nodeChilds.getLength();j++)
-                {
+                for (int j = 0; j < nodeChilds.getLength(); j++) {
                     Node appNode = nodeChilds.item(j);
                     String nodeName = appNode.getNodeName();
-                    if(nodeName.equals("activity") || nodeName.equals("service") || nodeName.equals("receiver"))
-                    {
+                    if (nodeName.equals("activity") || nodeName.equals("service") || nodeName.equals("receiver")) {
                         NamedNodeMap attrs = appNode.getAttributes();
 
-                        for (int x = 0;x < attrs.getLength();x++)
-                        {
+                        for (int x = 0; x < attrs.getLength(); x++) {
                             Node attr = attrs.item(x);
-                            if(attr.getNodeName().equals("android:name"))
-                            {
+                            if (attr.getNodeName().equals("android:name")) {
                                 activities.add(attr.getNodeValue());
                             }
                         }
@@ -139,7 +118,6 @@ public class BundleUtil {
 
             }
         }
-
 
 
         input.close();

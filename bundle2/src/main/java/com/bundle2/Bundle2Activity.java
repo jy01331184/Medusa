@@ -18,6 +18,7 @@ public class Bundle2Activity extends BundleActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    System.out.println("remote 1");
                     Toast.makeText(getApplicationContext(),getString(R.string.app_name),Toast.LENGTH_LONG).show();
                 } catch (Exception e) {
                     e.printStackTrace();

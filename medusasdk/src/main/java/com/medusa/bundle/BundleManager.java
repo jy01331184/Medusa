@@ -158,32 +158,45 @@ public class BundleManager {
 
             if (bundle.isLocalBundle()) //如果是本地bundle 则判断是否需要替换apk
             {
-                File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundle.path);
+                File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
                 if (originBundleFile.exists() && !MD5Util.genFileMd5sum(originBundleFile).equals(bundle.md5)) //本地bundle存在更新
                 {
                     Log.log("BundleManager", "subsitute local bundle " + bundle.artifactId + " from" + originBundleFile.getAbsolutePath());
-                    FileUtil.copyFile(new FileInputStream(originBundleFile).getChannel(), bundleFile.getAbsolutePath());
+                    FileUtil.copyFile(new FileInputStream(originBundleFile).getChannel(), new File(Constant.getPluginDir(),BundleUtil.getBundleFileName(bundleInAsset)).getAbsolutePath() );
                     BundleUtil.syncBundle(bundleFile,bundle);
+                    bundle.version = bundleInAsset.version;
                     bundle.activities = bundleInAsset.activities;
+                    if(!TextUtils.equals(bundle.path,bundleInAsset.path)){
+                        File dexOptFile = Constant.getDexOptFile(bundleFile);
+                        if(dexOptFile != null)
+                            dexOptFile.delete();
+                        bundleFile.delete();
+                        Log.log("BundleManager", "remove local bundle file for update" + bundleFile.getAbsolutePath());
+                        bundle.path = bundleInAsset.path;
+                    }
                     change = true;
                 }
             }
-            else if(BundleUtil.compareVersion(bundleInAsset.version, bundle.version) > 0)
+            else
             {
-                File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
-                if (originBundleFile.exists()) {
-                    Log.log("BundleManager", "update remote bundle " + bundle.artifactId + ":" + bundle.version + " to " + bundleInAsset.version);
-                    bundleFile.delete();
-                    File dexOptFile = Constant.getDexOptFile(bundleFile);
-                    if(dexOptFile != null)
-                        dexOptFile.delete();
-                    bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundleInAsset));
-                    FileUtil.copyFile(new FileInputStream(originBundleFile).getChannel(), bundleFile.getAbsolutePath());
-                    BundleUtil.syncBundle(bundleFile,bundle);
-                    bundle.activities = bundleInAsset.activities;
-                    bundle.version = bundleInAsset.version;
-                    bundle.path = bundleInAsset.path;
-                    change = true;
+                int result = BundleUtil.compareVersion(bundleInAsset.version, bundle.version) ;
+                if(result > 0 ){
+                    File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
+                    if (originBundleFile.exists()) {
+                        Log.log("BundleManager", "update remote bundle " + bundle.artifactId + ":" + bundle.version + " to " + bundleInAsset.version);
+                        bundleFile.delete();
+                        File dexOptFile = Constant.getDexOptFile(bundleFile);
+                        if(dexOptFile != null)
+                            dexOptFile.delete();
+                        bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundleInAsset));
+                        BundleUtil.syncBundle(bundleFile,bundle);
+                        bundle.activities = bundleInAsset.activities;
+                        bundle.version = bundleInAsset.version;
+                        bundle.path = bundleInAsset.path;
+                        change = true;
+                    }else {
+                        Log.error("BundleManager","update remote bundle fail."+originBundleFile.getAbsolutePath()+" not exist!");
+                    }
                 }
             }
         }

@@ -13,4 +13,8 @@ public class Log {
             System.out.println("    ["+caller+"] :"+str);
     }
 
+    public static void error(Object caller,String str)
+    {
+        System.err.println("    ["+caller+"] :"+str);
+    }
 }

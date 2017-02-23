@@ -65,18 +65,15 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
     @Override
     void mergeManifests(File mainManifest, List<File> manifestOverlays, List<? extends ManifestDependency> libraries, String packageOverride, int versionCode, String versionName, String minSdkVersion, String targetSdkVersion, Integer maxSdkVersion, String outManifestLocation, String outAaptSafeManifestLocation, ManifestMerger2.MergeType mergeType, Map<String, Object> placeHolders, File reportFile) {
 
-        def coll = project.fileTree(project.projectDir.absolutePath + "/linken") {
-            include '*.xml'
-        }
-
-        for (File file : coll.files) {
-            ManifestDependencyImpl manifestDependency = new ManifestDependencyImpl(file, new ArrayList<ManifestDependencyImpl>())
-            libraries.add(manifestDependency)
-            Log.log(this, "add merge manifest:" + file.absolutePath)
+        project.configurations.getByName('bundle').files.each {
+            if(it.absolutePath.endsWith(".xml")){
+                ManifestDependencyImpl manifestDependency = new ManifestDependencyImpl(it, new ArrayList<ManifestDependencyImpl>())
+                libraries.add(manifestDependency)
+                Log.log(this, "add merge manifest:" + it.absolutePath)
+            }
         }
 
         super.mergeManifests(mainManifest, manifestOverlays, libraries, packageOverride, versionCode, versionName, minSdkVersion, targetSdkVersion, maxSdkVersion, outManifestLocation, outAaptSafeManifestLocation, mergeType, placeHolders, reportFile)
-
 
     }
 

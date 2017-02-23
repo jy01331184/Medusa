@@ -36,11 +36,11 @@ public class BundleExecutor extends ThreadPoolExecutor{
         return instance;
     }
 
-    private List<Bundle> remoteBundles = new ArrayList<>();
+    private List<Bundle> removeBundles = new ArrayList<>();
 
     public void deleteBundle(Bundle bundle)
     {
-        remoteBundles.add(bundle);
+        removeBundles.add(bundle);
     }
 
     public synchronized void loadBundle(Bundle bundle, LazyLoadActivity activity, String lazyClassName)
@@ -70,8 +70,8 @@ public class BundleExecutor extends ThreadPoolExecutor{
 
     public void commit()
     {
-        for (int i = remoteBundles.size()-1; i >= 0; i--) {
-            BundleManager.getInstance().removeBundle(remoteBundles.remove(i));
+        for (int i = removeBundles.size()-1; i >= 0; i--) {
+            BundleManager.getInstance().removeBundle(removeBundles.remove(i));
         }
     }
 

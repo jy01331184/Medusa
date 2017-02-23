@@ -1,5 +1,6 @@
 package com.medusa.task;
 
+import com.medusa.Constant;
 import com.medusa.util.Log;
 
 import java.io.BufferedReader;
@@ -17,7 +18,7 @@ public class PrepareBundleTask extends BaseMedusaTask {
 
 
     private Map<String,String> map = new HashMap<>();
-    private static final String localBundlePostfix = ":0.0.0";
+
 
     @Override
     public void execute(File input, File output) {
@@ -60,7 +61,7 @@ public class PrepareBundleTask extends BaseMedusaTask {
         File bundleFile = new File(input,"bundle.properties");
         Log.log(this,"prepareBundle collect info from "+bundleFile.getAbsolutePath());
         BufferedReader reader = new BufferedReader(new FileReader(bundleFile));
-        System.out.println();
+
         String line = null;
         while( (line = reader.readLine()) != null )
         {
@@ -90,7 +91,7 @@ public class PrepareBundleTask extends BaseMedusaTask {
                     String groupId = tempInfos[0];
                     String artifactId = tempInfos[1];
                     String bundleKey = groupId + ":" + artifactId;
-                    map.put(bundleKey,groupId+":"+artifactId+localBundlePostfix);
+                    map.put(bundleKey,groupId+":"+artifactId+ Constant.LOCAL_BUNDLE_POSTFIX);
                 }
             }
 

@@ -31,7 +31,7 @@ dependencies {
 }
 
 group='com.medusa.sdk'
-version='1.0.1'
+version='1.0.2'
 def mavenLocalRepo = ''
 
 afterEvaluate{
@@ -44,7 +44,7 @@ afterEvaluate{
     uploadArchives {
         repositories {
             mavenDeployer {
-                //repository (url: uri(mavenLocalRepo))
+//                repository (url: uri(mavenLocalRepo))
                 repository (url: 'http://localhost:8081/repository/maven-releases/'){
                     authentication(userName: "admin", password: "123")
                 }

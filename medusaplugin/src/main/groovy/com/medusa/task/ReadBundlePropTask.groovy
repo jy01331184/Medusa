@@ -34,7 +34,6 @@ public class ReadBundlePropTask extends BaseMedusaTask{
                 builder.append(line+"\n")
             }
 
-
             bundleModel = new BundleModel()
             bundleModel.name = properties.get(BundlePropConstant.NAME_KEY)
             bundleModel.packageId = properties.get(BundlePropConstant.PACKAGEID_KEY)

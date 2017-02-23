@@ -14,17 +14,19 @@
 
     <TextView
         android:id="@+id/txt"
-
+        android:text="@medusa.com.bundle3:string/bundle"
+        android:background="@com.bundle2:drawable/ic"
         android:layout_centerHorizontal="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-         />
-    <TextView
+        />
+    <com.bundle2.Bundle2TextView
+        android:background="@com.bundle2:drawable/ic"
         android:layout_below="@+id/txt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <Button
-
+        android:background="@com.bundle2:drawable/ic"
         android:layout_centerInParent="true"
         android:id="@+id/btn"
         android:text="go to Bundle2"

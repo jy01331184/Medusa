@@ -1,6 +1,6 @@
 <resources>
-    <style name="mstyle" parent="@android:style/Theme.Holo">
-
+    <style name="mstyle" >
+        <item name="android:statusBarColor">#ffffffff</item>
     </style>
 
 </resources>
