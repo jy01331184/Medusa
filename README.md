@@ -1,3 +1,5 @@
+<center>![](image/logo.jpeg)</center>
+<div align=center><img width="150" height="150" src="http://img.blog.csdn.net/20161028230559575"/></div>
 # Medusa --美杜莎 基于gradle构建的可插拔插件化
 #### 安装依赖 ：jdk7(jdk8)、maven3.0.5、python、androidsdk、gradle2.10 并且加入到环境变量中。    
 #
