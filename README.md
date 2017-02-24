@@ -1,4 +1,5 @@
-<div align=center>![](image/logo.jpeg)</div>
+<div align=center><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487937880420&di=eac044d2ea0a05eafb9c8b1603e93fb8&imgtype=0&src=http%3A%2F%2Fimg1.cache.netease.com%2Fcatchpic%2FD%2FDE%2FDE30E317FFFACFBD21FFD9D09E08DC90.jpg">
+</div>
 # Medusa --美杜莎 基于gradle构建的可插拔插件化
 #### 安装依赖 ：jdk7(jdk8)、maven3.0.5、python、androidsdk、gradle2.10 并且加入到环境变量中。    
 #
