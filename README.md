@@ -7,3 +7,50 @@
 - [x] 支持夸bundle的资源调用（图片，布局，样式等）和代码调用（非反射）
 - [x] 支持bundle异步加载，懒加载，优先级加载等加载方式
 - [x] 基于gradle plugin的一键式构建，无需任何额外代码或过程
+> 额外依赖环境：maven3.0.5、python
+<table>
+  <thead>
+    <tr>
+      <th style="width:15%">module</th>
+      <th style="width:20%">usage</th>
+      <th style="width:65%">remark</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>app</td>
+      <td>主工程</td>
+      <td>依赖medusa sdk</td>
+    </tr>
+    <tr>
+      <td>bundle1</td>
+      <td>一号bundle</td>
+      <td>引用bundle2 class、引用bundle3 resource.包含activity、service、receiver、style</td>
+    </tr>
+    <tr>
+      <td>bundle2</td>
+      <td>二号bundle</td>
+      <td>包含activity、自定义view</td>
+    </tr>
+    <tr>
+      <td>bundle3</td>
+      <td>三号bundle</td>
+      <td>包含activity、receiver、图片（lazyload）</td>
+    </tr>
+    <tr>
+      <td>medusa sdk</td>
+      <td>sdk</td>
+      <td>包含bundle、classloader等一系列lib</td>
+    </tr>
+    <tr>
+      <td>medusa plugin</td>
+      <td>构建plugin</td>
+      <td>定义一系列gradle task完成整个medusa 构建</td>
+    </tr>
+    <tr>
+      <td>medusa studio plugin</td>
+      <td>android studio/idea 可视化构建工具</td>
+      <td>为IDE提供可视化按钮，一键式构建</td>
+    </tr>
+  </tbody>
+</table>
