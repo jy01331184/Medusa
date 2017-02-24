@@ -8,6 +8,8 @@
 - [x] 支持bundle异步加载，懒加载，优先级加载等加载方式
 - [x] 基于gradle plugin的一键式构建，无需任何额外代码或过程
 > 额外依赖环境：maven3.0.5、python
+
+
 <table>
   <thead>
     <tr>
