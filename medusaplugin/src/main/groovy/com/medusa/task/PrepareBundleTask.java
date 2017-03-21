@@ -1,6 +1,6 @@
 package com.medusa.task;
 
-import com.medusa.Constant;
+import com.medusa.RapierConstant;
 import com.medusa.util.Log;
 
 import java.io.BufferedReader;
@@ -69,10 +69,12 @@ public class PrepareBundleTask extends BaseMedusaTask {
             if( !content.startsWith("#") )
             {
                 String[] tempInfos = content.split(":");
-                String groupId = tempInfos[0];
-                String artifactId = tempInfos[1];
-                String bundleKey = groupId + ":" + artifactId;
-                map.put(bundleKey,content);
+                if(tempInfos.length >= 2){
+                    String groupId = tempInfos[0];
+                    String artifactId = tempInfos[1];
+                    String bundleKey = groupId + ":" + artifactId;
+                    map.put(bundleKey,content);
+                }
             }
         }
 
@@ -88,10 +90,15 @@ public class PrepareBundleTask extends BaseMedusaTask {
                 if( !content.startsWith("#") )
                 {
                     String[] tempInfos = content.split(":");
-                    String groupId = tempInfos[0];
-                    String artifactId = tempInfos[1];
-                    String bundleKey = groupId + ":" + artifactId;
-                    map.put(bundleKey,groupId+":"+artifactId+ Constant.LOCAL_BUNDLE_POSTFIX);
+                    if(tempInfos.length >= 2){
+                        String groupId = tempInfos[0];
+                        String artifactId = tempInfos[1];
+                        String bundleKey = groupId + ":" + artifactId;
+
+                        if(map.containsKey(bundleKey)){
+                            map.put(bundleKey,groupId+":"+artifactId+ RapierConstant.LOCAL_BUNDLE_POSTFIX);
+                        }
+                    }
                 }
             }
 

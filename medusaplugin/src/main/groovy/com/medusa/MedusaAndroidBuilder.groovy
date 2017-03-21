@@ -58,6 +58,8 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
             Log.log(this, 'no packageId use super.processResources()')
             super.processResources(aaptCommand, enforceUniquePackageName, processOutputHandler);
         } else {
+            //super.processResources(aaptCommand, enforceUniquePackageName, processOutputHandler);
+
             aapt(aaptCommand)
         }
     }
@@ -82,9 +84,9 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
         def aaptBaseDir,aapt;
 
         if(Os.isFamily(Os.FAMILY_WINDOWS))
-            aapt = "aapt_win.exe"
+            aapt = "aapt.exe"
         else if(Os.isFamily(Os.FAMILY_MAC))
-            aapt = "aapt_mac"
+            aapt = "aapt"
         else if(Os.isFamily(Os.FAMILY_UNIX))
             aapt = "aapt_linux"
 
@@ -140,8 +142,8 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
         }
 
         def mArgs = ['package', '--no-crunch', '-f', '-m', '-J', rOutputDir, '-S', resDir, '-I',
-                     androidJar, '-M', manifestDir, '--apk-module', packageId, '-F', apOutPutDir, '-0', 'apk', '--debug-mode',
-                     "-A", assetDir]
+                     androidJar, '-M', manifestDir,  '-F', apOutPutDir, '-0', 'apk', '--debug-mode',
+                     "-A", assetDir,'--package-id', packageId,'-x','--custom-package',mainPackageName,'--non-constant-id']
         if(android.aaptOptions.additionalParameters != null)
             mArgs.addAll(android.aaptOptions.additionalParameters)
 

@@ -3,7 +3,7 @@ package com.medusa.util;
 import com.medusa.model.BundleProperty;
 
 import org.gradle.api.Project;
-import org.json.JSONArray;
+import org.json.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -76,13 +76,14 @@ public class BundleUtil {
             e.printStackTrace();
         }
 
-        JSONArray jsonArray = new JSONArray();
+        JSONObject jsonObject = new JSONObject();
 
         for (BundleProperty property : properties) {
-            jsonArray.put(property.toJson());
+            //jsonArray.put(property.toJson());
+            jsonObject.put(property.artifactId,property.toJson());
         }
 
-        return jsonArray.toString();
+        return jsonObject.toString();
     }
 
     private static List<String> parseActivities(File manifest) throws Exception {

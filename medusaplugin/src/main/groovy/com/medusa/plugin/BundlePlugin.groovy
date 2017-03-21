@@ -4,7 +4,8 @@ import com.android.build.gradle.TestedExtension
 import com.android.build.gradle.internal.dsl.AaptOptions
 import com.android.build.gradle.internal.tasks.BaseTask
 import com.android.builder.core.AndroidBuilder
-import com.medusa.Constant
+import com.medusa.BundleConstant
+import com.medusa.RapierConstant
 import com.medusa.HookedDependencySet
 import com.medusa.MedusaAndroidBuilder
 import com.medusa.model.BundleModel
@@ -40,12 +41,13 @@ public class BundlePlugin implements Plugin<Project> {
     @Override
     void apply(Project o) {
         android = o.extensions.findByName("android")
+        BundleConstant.INIT(o)
         readBundleProp = BaseMedusaTask.regist(o,ReadBundlePropTask.class)
         addBundleMF = BaseMedusaTask.regist(o,AddBundleMFTask.class);
         readBundleProp.init(o)
         readBundleProp.execute(null, null)
         BundleModel bundleModel = readBundleProp.getResult()
-        println("bundle plugin:"+Constant.PLUGIN_VERSION+"    bundle:"+bundleModel+'-->'+this.toString())
+        println("bundle plugin:"+RapierConstant.PLUGIN_VERSION+"    bundle:"+bundleModel+'-->'+this.toString())
         o.configurations.create('bundle')
 
         makePublicXml(o)
@@ -73,9 +75,10 @@ public class BundlePlugin implements Plugin<Project> {
         makeInstallBundleRemote(o, bundleTask,bundleModel)
         o.afterEvaluate {
 
+            Task processResTask = o.tasks.findByName("processReleaseResources")
 
+            hookProcessResource(o,processResTask )
 
-            hookProcessResource(o, o.tasks.findByName("processReleaseResources"))
             o.tasks.matching {it.name.startsWith("lintVital")}.each {
                 Log.log("BundlePlugin","disable lint "+it.name)
                 it.enabled = false
@@ -142,8 +145,10 @@ public class BundlePlugin implements Plugin<Project> {
 
     }
 
-    private MedusaAndroidBuilder hookProcessResource(project, rTask) {
+    private MedusaAndroidBuilder hookProcessResource(Project project,Task rTask) {
         MedusaAndroidBuilder mBuilder
+
+        rTask.inputs.file(project.file(BundleConstant.BUNDLE_PROPERTY))
 
         BaseTask.class.getDeclaredFields().find {
             it.name.equals("androidBuilder")

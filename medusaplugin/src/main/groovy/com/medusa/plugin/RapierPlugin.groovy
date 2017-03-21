@@ -6,7 +6,7 @@ import com.android.builder.core.AndroidBuilder
 import com.android.ide.common.xml.AndroidManifestParser
 import com.android.io.FolderWrapper
 import com.android.xml.AndroidManifest
-import com.medusa.Constant
+import com.medusa.RapierConstant
 import com.medusa.MedusaAndroidBuilder
 import com.medusa.task.BaseMedusaTask
 import com.medusa.task.PrepareBundleTask
@@ -26,13 +26,13 @@ public class RapierPlugin implements Plugin<Project> {
     void apply(Project o) {
         Task assemableRapierTask = o.task('assemableRapier')
         Task installRapierTask = o.task('installRapier')
-        Constant.INIT(o)
+        RapierConstant.INIT(o)
         android = o.extensions.findByName("android")
         android.sourceSets{
-            main.assets.srcDirs = [main.assets.srcDirs,o.file(Constant.BUNDLE_JSON).parentFile.absolutePath]
+            main.assets.srcDirs = [main.assets.srcDirs,o.file(RapierConstant.BUNDLE_JSON).parentFile.absolutePath]
 
         }
-        println("rapier plugin:"+Constant.PLUGIN_VERSION)
+        println("rapier plugin:"+RapierConstant.PLUGIN_VERSION)
         o.getConfigurations().create('bundle')
         assemableRapierTask.group = 'bundle'
         installRapierTask.group = 'bundle'
@@ -81,7 +81,7 @@ public class RapierPlugin implements Plugin<Project> {
             assemableRapierTask.finalizedBy o.tasks.findByName('assembleRelease')
 
             Task mergeAssetTask = o.tasks.findByName('mergeReleaseAssets')
-            mergeAssetTask.inputs.file(o.file(Constant.BUNDLE_JSON).parentFile)
+            mergeAssetTask.inputs.file(o.file(RapierConstant.BUNDLE_JSON).parentFile)
 
             o.tasks.matching {it.name.startsWith("lintVital")}.each {
                 Log.log("RapierPlugin","disable lint "+it.name)
@@ -121,7 +121,7 @@ public class RapierPlugin implements Plugin<Project> {
         prepareDependencyTask.doLast{
             Log.log("RapierPlugin","prepareDependencyTask")
             BaseMedusaTask prepareTask = BaseMedusaTask.regist(o,PrepareDependencyTask.class);
-            prepareTask.execute(o.file(Constant.TEMP_PROPERTY),null)
+            prepareTask.execute(o.file(RapierConstant.TEMP_PROPERTY),null)
             List<String> list = prepareTask.getResult()
 
             for (String dep:list) {
@@ -142,24 +142,24 @@ public class RapierPlugin implements Plugin<Project> {
 
     void makePrepareBundleTask(Task prepareBundleTask,Project o){
 
-        prepareBundleTask.inputs.files(Constant.BUNDLE_PROPERTY,Constant.LOCAL_PROPERTY)
-        prepareBundleTask.outputs.file(Constant.TEMP_PROPERTY)
+        prepareBundleTask.inputs.files(RapierConstant.BUNDLE_PROPERTY,RapierConstant.LOCAL_PROPERTY)
+        prepareBundleTask.outputs.file(RapierConstant.TEMP_PROPERTY)
 
         prepareBundleTask.doLast{
             Log.log("RapierPlugin","prepareBundle")
             BaseMedusaTask prepareTask = BaseMedusaTask.regist(o,PrepareBundleTask.class);
-            prepareTask.execute(o.projectDir,new File(Constant.TEMP_PROPERTY))
+            prepareTask.execute(o.projectDir,new File(RapierConstant.TEMP_PROPERTY))
         }
     }
 
     void makePrepareBundleJsonTask(Task task,Project o)
     {
-        task.inputs.file(Constant.TEMP_PROPERTY)
-        task.outputs.file(Constant.BUNDLE_JSON)
+        task.inputs.file(RapierConstant.TEMP_PROPERTY)
+        task.outputs.file(RapierConstant.BUNDLE_JSON)
 
         task.doLast {
-            String json = BundleUtil.readBundleProperty(o,new File(Constant.TEMP_PROPERTY))
-            File file = new File(Constant.BUNDLE_JSON)
+            String json = BundleUtil.readBundleProperty(o,new File(RapierConstant.TEMP_PROPERTY))
+            File file = new File(RapierConstant.BUNDLE_JSON)
             if(!file.getParentFile().exists())
                 file.getParentFile().mkdirs()
             FileWriter writer = new FileWriter(file)
@@ -169,7 +169,7 @@ public class RapierPlugin implements Plugin<Project> {
             Log.log("RapierPlugin","hookMergeAssets add bundle.json to"+file.absolutePath)
             Log.log("RapierPlugin","bundle.json:"+json)
             Task mergeAssetTask = o.tasks.findByName('mergeReleaseAssets')
-            mergeAssetTask.inputs.file(o.file(Constant.BUNDLE_JSON).parentFile)
+            mergeAssetTask.inputs.file(o.file(RapierConstant.BUNDLE_JSON).parentFile)
         }
     }
 
