@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 
 import com.medusa.bundle.BundleManager;
+import com.medusa.classloader.MedusaClassLoader;
 import com.medusa.util.ReflectUtil;
 
 /**
@@ -30,7 +31,8 @@ public class MedusaApplication extends Application {
     }
 
     private void setUpClassLoader() {
-        classLoader = new MedusaClassLoader(this, getApplicationInfo().sourceDir, ClassLoader.getSystemClassLoader(), getClassLoader());
+        //// TODO: 17/3/7 添加替换classloader失败 全局禁用bundle
+        classLoader = new MedusaClassLoader(this, getApplicationInfo().sourceDir, getClassLoader(), getClassLoader());
         ReflectUtil.setBoostClassLoader(this, classLoader);
         ReflectUtil.replaceInstrumentation();
     }

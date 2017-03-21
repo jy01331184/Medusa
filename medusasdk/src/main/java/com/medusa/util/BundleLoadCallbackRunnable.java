@@ -1,7 +1,7 @@
 package com.medusa.util;
 
 import com.medusa.application.LazyLoadActivity;
-import com.medusa.application.MedusaClassLoader;
+import com.medusa.classloader.MedusaClassLoader;
 import com.medusa.bundle.Bundle;
 
 import java.util.List;

@@ -4,10 +4,10 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.widget.Toast;
 
+import com.medusa.bundle.Bundle;
 import com.medusa.bundle.BundleExecutor;
 import com.medusa.bundle.BundleManager;
 
@@ -18,6 +18,8 @@ import java.lang.reflect.Method;
  */
 public class MedusaInstrumentation extends Instrumentation {
 
+
+
     private Instrumentation mBase;
     private Method execStartActivity;
 
@@ -27,6 +29,7 @@ public class MedusaInstrumentation extends Instrumentation {
 
     @Override
     public Activity newActivity(ClassLoader cl, String className, Intent intent) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+
         try
         {
             return super.newActivity(cl, className, intent);

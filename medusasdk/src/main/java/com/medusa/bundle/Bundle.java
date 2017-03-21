@@ -1,6 +1,9 @@
 package com.medusa.bundle;
 
+import com.medusa.classloader.BundleClassLoader;
+
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by tianyang on 16/8/11.
@@ -15,7 +18,7 @@ public class Bundle {
     public String version;
 
     public String path;
-    public List<String> activities;
+    public Set<String> activities;
     public List<String> dependencies;
     public String md5;
 
@@ -25,8 +28,7 @@ public class Bundle {
      * temp
      */
 
-
-    public transient boolean loaded;
+    public transient Boolean loaded = false;
 
     public transient BundleClassLoader classLoader;
 

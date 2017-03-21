@@ -65,7 +65,8 @@ public class ReflectUtil {
             method.setAccessible(true);
 
             for (String dir : dirs) {
-                method.invoke(assetManager, dir);
+                Object obj = method.invoke(assetManager, dir);
+                //Log.log("BundleResource",bundle.artifactId+" add path:"+dir+"  res:"+obj);
             }
 
             BundleResource resources = new BundleResource(assetManager, MedusaApplication.getInstance().getResources().getDisplayMetrics(), MedusaApplication.getInstance().getResources().getConfiguration(),bundle);

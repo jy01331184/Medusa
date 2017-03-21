@@ -103,4 +103,13 @@ public class FileUtil {
             e.printStackTrace();
         }
     }
+
+    public static void writeToFileAsync(final File file, final String content){
+        new Thread(){
+            @Override
+            public void run() {
+                writeToFile(file,content);
+            }
+        }.start();
+    }
 }

@@ -17,7 +17,6 @@ public class BundleResource extends Resources {
         this.bundle = bundle;
     }
 
-
     @Override
     public String toString() {
         return bundle.artifactId+"->"+super.toString();

@@ -1,6 +1,6 @@
 package com.medusa.util;
 
-import com.medusa.application.MedusaClassLoader;
+import com.medusa.classloader.MedusaClassLoader;
 import com.medusa.bundle.Bundle;
 import com.medusa.bundle.BundleExecutor;
 
@@ -24,9 +24,11 @@ public class BundleLoadRunnable implements Runnable {
         for (Bundle bundle : bundles) {
             try
             {
-                if(!bundle.loaded )
-                {
-                    BundleExecutor.getInstance().loadBundle(classLoader,bundle);
+                synchronized (bundle.loaded){
+                    if(!bundle.loaded)
+                    {
+                        BundleExecutor.getInstance().loadBundle(classLoader,bundle);
+                    }
                 }
             }
             catch (Exception e)
