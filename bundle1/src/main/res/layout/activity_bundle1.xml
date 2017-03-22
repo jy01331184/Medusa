@@ -1,35 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:apps="http://schemas.android.com/apk/res/com.bundle2"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
+    android:padding="16dp"
     >
     <!--android:text="@com.alipay.mobile.personalbase:string/friday"-->
     <!--android:background="@com.alipay.mobile.personalbase:drawable/preview_lbs_icon"-->
+    <!--android:text="@medusa.com.bundle3:string/bundle"/-->
+    <!--android:background="@medusa.com.bundle3:drawable/kk"-->
 
-    <TextView
-        android:id="@+id/txt"
-        android:text="@medusa.com.bundle3:string/bundle"
-        android:background="@com.bundle2:drawable/ic"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        />
     <com.bundle2.Bundle2TextView
-        android:background="@com.bundle2:drawable/ic"
-        android:layout_below="@+id/txt"
+        apps:banner="@string/app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
     <Button
-        android:background="@com.bundle2:drawable/ic"
+        android:text="@android:string/cancel"
+        android:background="@com.bundle2:drawable/add"
         android:layout_centerInParent="true"
         android:id="@+id/btn"
-        android:text="go to Bundle2"
+
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"/>
 </RelativeLayout>

@@ -2,6 +2,7 @@
      resources that were generated from the source data. -->
 <resources>
 
-    <public type="string" name="bundle" id="0x1d060000" />
+    <public type="string" name="bundle" id="0x1d050000" />
+    <public type="drawable" name="kk" id="0x1d020000" />
 
 </resources>

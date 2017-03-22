@@ -1,7 +1,7 @@
 package com.bundle2;
 
 import android.content.Context;
-import android.graphics.Color;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -13,8 +13,11 @@ public class Bundle2TextView extends TextView {
 
     public Bundle2TextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setBackgroundColor(Color.YELLOW);
+        setBackgroundResource(R.drawable.ic);
         setText(R.string.str);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.Bundle2TextView);
+        System.out.println(typedArray.getText(R.styleable.Bundle2TextView_banner));
+
     }
 
 

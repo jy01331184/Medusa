@@ -1,6 +1,0 @@
-<resources>
-    <style name="mstyle" >
-        <item name="android:statusBarColor">#ffffffff</item>
-    </style>
-
-</resources>
