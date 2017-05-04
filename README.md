@@ -57,5 +57,6 @@
     </tr>
   </tbody>
 </table>
-###  相关概念和使用方法详见 [wiki](https://github.com/jy01331184/Medusa/wiki) 
+### 6. 高效绘制 [甘特图](https://www.zybuluo.com/mdeditor?url=https://www.zybuluo.com/static/editor/md-help.markdown#9-甘特图)
+### 相关概念和使用方法详见[wiki](https://github.com/jy01331184/Medusa/wiki) 
 
