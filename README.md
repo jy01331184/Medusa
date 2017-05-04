@@ -9,7 +9,7 @@
 - [x] 支持bundle异步加载，懒加载，优先级加载等加载方式
 - [x] 基于gradle plugin的一键式构建，无需任何额外代码或过程
 
-
+###相关模块说明
 
 <table>
   <thead>
@@ -43,12 +43,12 @@
     <tr>
       <td>medusa sdk</td>
       <td>sdk</td>
-      <td>包含bundle、classloader等一系列lib</td>
+      <td>包含bundle、classloader等一系列插件化功能支撑</td>
     </tr>
     <tr>
       <td>medusa plugin</td>
       <td>构建plugin</td>
-      <td>定义一系列gradle task完成整个medusa 构建</td>
+      <td>定义gradle plugin 完成整个medusa构建</td>
     </tr>
     <tr>
       <td>medusa studio plugin</td>
