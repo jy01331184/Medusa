@@ -3,11 +3,12 @@
 <div align=center>
   <h1>Medusa --美杜莎 基于gradle构建的Android插件化</h1>
 </div>
+
 - [x] 无侵入式支持activity、service、broadcast、contenprovider等组件
 - [x] 支持夸bundle的资源调用（图片，布局，样式等）和代码调用（非反射）
 - [x] 支持bundle异步加载，懒加载，优先级加载等加载方式
 - [x] 基于gradle plugin的一键式构建，无需任何额外代码或过程
-> 额外依赖环境：maven3.0.5、python
+
 
 
 <table>
@@ -56,4 +57,5 @@
     </tr>
   </tbody>
 </table>
-###  相关概念和使用方法详见 [wiki](https://github.com/jy01331184/Medusa/wiki)
+###  相关概念和使用方法详见 [wiki](https://github.com/jy01331184/Medusa/wiki) 
+额外依赖环境：maven3.0.5、python
