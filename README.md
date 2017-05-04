@@ -10,7 +10,6 @@
 - [x] 基于gradle plugin的一键式构建，无需任何额外代码或过程
 
 ###相关模块说明
-
 <table>
   <thead>
     <tr>
@@ -58,7 +57,6 @@
   </tbody>
 </table>
 
----------------
 
 #### 相关概念和使用方法详见[wiki](https://github.com/jy01331184/Medusa/wiki) 
 
