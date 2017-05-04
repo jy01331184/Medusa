@@ -39,6 +39,15 @@ dependencies {
 //    bundle 'com.bundle3:bundle3:0.0.0@apk'
 }
 
+bundle{
+    name = 'bundle1'
+    packageId = 43
+    groupId = 'com.bundle1'
+    version = '1.0.2'
+    priority = 33
+    exportPackages = "com.bundle1"
+}
+
 
 
 

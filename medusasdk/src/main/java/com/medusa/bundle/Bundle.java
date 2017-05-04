@@ -19,8 +19,8 @@ public class Bundle {
 
     public String path;
     public Set<String> activities;
+    public Set<String> exportPackages;
     public List<String> dependencies;
-    public String md5;
 
     public int priority;
 
@@ -42,7 +42,6 @@ public class Bundle {
                 ", path='" + path + '\'' +
                 ", activities=" + activities +
                 ", dependencies=" + dependencies +
-                ", md5='" + md5 + '\'' +
                 ", priority=" + priority +
                 '}';
     }

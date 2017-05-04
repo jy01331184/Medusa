@@ -16,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -59,12 +58,12 @@ public class BundleUtil {
 
                     property.path = "lib"+artifactId+"-"+version+".so";
 
-                    Set<File> bundleDeps = project.getConfigurations().getByName("bundle").getFiles();
-                    for (File file : bundleDeps) {
-                        if (file.getName().equals(artifactId + "-" + version + "-" + "AndroidManifest.xml")) {
-                            property.activities = parseActivities(file);
-                        }
-                    }
+//                    Set<File> bundleDeps = project.getConfigurations().getByName("bundle").getFiles();
+//                    for (File file : bundleDeps) {
+//                        if (file.getName().equals(artifactId + "-" + version + "-" + "AndroidManifest.xml")) {
+//                            property.activities = parseActivities(file);
+//                        }
+//                    }
 
                     properties.add(property);
                 }
@@ -86,7 +85,7 @@ public class BundleUtil {
         return jsonObject.toString();
     }
 
-    private static List<String> parseActivities(File manifest) throws Exception {
+    public static List<String> parseActivities(File manifest) throws Exception {
         List<String> activities = new ArrayList<>();
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

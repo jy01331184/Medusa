@@ -3,7 +3,6 @@ package com.medusa.classloader;
 import android.content.Context;
 
 import com.medusa.bundle.Bundle;
-import com.medusa.bundle.BundleExecutor;
 import com.medusa.bundle.BundleManager;
 
 import java.util.ArrayList;
@@ -46,7 +45,6 @@ public class MedusaClassLoader extends PathClassLoader {
                 //System.out.println("cache hit in findclass:"+name);
                 return cls;
             }
-
         }
         Bundle bundle = BundleManager.getInstance().queryBundleName(name);
         if(bundle != null )
@@ -62,45 +60,28 @@ public class MedusaClassLoader extends PathClassLoader {
             }
             else
             {
-                synchronized (bundle.loaded){
-                    if( (!bundle.loaded || bundle.classLoader == null)){
-                        BundleExecutor.getInstance().loadBundle(this,bundle);
-                        if(bundle.classLoader != null && bundle.loaded){
-                            Class<?> cls = bundle.classLoader.loadClass(name);
-                            if(cls != null)
-                            {
-                                //Log.log("MedusaClassLoader","hard load class "+name +" from bundle "+bundle.artifactId);
-                                return cls;
-                            }
-                        }
-                    }else{
-                        Class<?> cls = bundle.classLoader.loadClass(name);
-                        if(cls != null)
-                        {
-                            //Log.log("MedusaClassLoader","load class "+name +" from bundle "+bundle.artifactId);
-                            return cls;
-                        }
-                    }
-                }
+//                synchronized (bundle.loaded){
+//                    if( (!bundle.loaded || bundle.classLoader == null)){
+//                        BundleExecutor.getInstance().loadBundle(this,bundle);
+//                        if(bundle.classLoader != null && bundle.loaded){
+//                            Class<?> cls = bundle.classLoader.loadClass(name);
+//                            if(cls != null)
+//                            {
+//                                //Log.log("MedusaClassLoader","hard load class "+name +" from bundle "+bundle.artifactId);
+//                                return cls;
+//                            }
+//                        }
+//                    }else{
+//                        Class<?> cls = bundle.classLoader.loadClass(name);
+//                        if(cls != null)
+//                        {
+//                            //Log.log("MedusaClassLoader","load class "+name +" from bundle "+bundle.artifactId);
+//                            return cls;
+//                        }
+//                    }
+//                }
             }
         }
-
-        for (BundleClassLoader cl : loaders) {
-
-            try {
-                Class<?> cls = cl.loadClassDirectly(name);
-                if(cls != null)
-                {
-//                Log.log("MedusaClassLoader","load class "+name +" from loop");
-                    //System.out.println("temp:"+name+"-"+cl);
-                    return cls;
-                }
-            }catch (Exception e){
-
-            }
-        }
-
-
 
         return super.findClass(name);
     }
@@ -138,21 +119,17 @@ public class MedusaClassLoader extends PathClassLoader {
             return findInCache;
         }
 
-        if(bundle.dependencies != null && !bundle.dependencies.isEmpty())
-        {
-            for (String name : bundle.dependencies) {
-                Bundle dependency = BundleManager.getInstance().queryBundleByBundleName(name);
-                if(dependency != null && dependency.loaded)
-                {
-                    Class<?> cls = dependency.classLoader.loadClassDirectly(className);
-                    if(cls != null){
-                        //System.out.println("load "+className+" in from dep:"+dependency.artifactId);
-                        addInCache(className,dependency.classLoader);
-                        return cls;
-                    }
+        Bundle targetBundle = BundleManager.getInstance().queryBundleName(className);
 
-                }
+        if(targetBundle != null && targetBundle.loaded)
+        {
+            Class<?> cls = targetBundle.classLoader.loadClassDirectly(className);
+            if(cls != null){
+                //System.out.println("load "+className+" in from dep:"+dependency.artifactId);
+                addInCache(className,targetBundle.classLoader);
+                return cls;
             }
+
         }
 
         return  result;

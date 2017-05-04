@@ -85,7 +85,6 @@ public class MD5Util {
             if (null != is) {
                 try {
                     is.close();
-                    is = null;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

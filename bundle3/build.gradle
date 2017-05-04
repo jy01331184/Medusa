@@ -34,3 +34,12 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'com.medusa.sdk:medusasdk:1.0.1@jar'
 }
+
+bundle{
+    name = 'bundle3'
+    packageId = 30
+    groupId = 'com.bundle3'
+    version = '1.0.2'
+    priority = 1747
+    exportPackages = "com.bundle3"
+}

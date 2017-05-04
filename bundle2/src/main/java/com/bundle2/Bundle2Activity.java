@@ -1,11 +1,13 @@
 package com.bundle2;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import com.medusa.bundle.BundleActivity;
+
+import medusa.com.bundle3.Bundle3Activity;
 
 public class Bundle2Activity extends BundleActivity {
 
@@ -18,8 +20,9 @@ public class Bundle2Activity extends BundleActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    System.out.println("remote 1");
-                    Toast.makeText(getApplicationContext(),getString(R.string.app_name),Toast.LENGTH_LONG).show();
+                    //System.out.println("remote 1");
+                    //Toast.makeText(getApplicationContext(),getString(R.string.app_name),Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(getApplicationContext(), Bundle3Activity.class));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

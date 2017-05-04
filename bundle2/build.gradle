@@ -40,6 +40,15 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     provided 'com.medusa.sdk:medusasdk:1.0.1@jar'
+    bundle 'com.bundle3:bundle3:0.0.0@apk'
+
 //    bundle 'com.bundle3:bundle3:0.0.0@apk'
 }
-
+bundle{
+    name = 'bundle2'
+    packageId = 100
+    groupId = 'com.bundle2'
+    version = '1.0.25'
+    priority = 100
+    exportPackages = "com.bundle2"
+}

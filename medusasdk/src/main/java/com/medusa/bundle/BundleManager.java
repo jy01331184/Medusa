@@ -33,38 +33,50 @@ public class BundleManager {
     }
 
     public void addBundle(Bundle bundle) {
-        if(bundle != null && !TextUtils.isEmpty(bundle.artifactId)){
-            bundleConfig.bundles.put(bundle.artifactId,bundle);
+        if (bundle != null && !TextUtils.isEmpty(bundle.artifactId)) {
+            bundleConfig.bundles.put(bundle.artifactId, bundle);
         }
     }
 
-    public void removeBundle(Bundle bundle)
-    {
+    public void removeBundle(Bundle bundle) {
         Bundle removeBundle = bundleConfig.bundles.remove(bundle.artifactId);
         File bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundle));
         bundleFile.delete();
         File dexOptFile = Constant.getDexOptFile(bundleFile);
-        if(dexOptFile != null)
+        if (dexOptFile != null)
             dexOptFile.delete();
-        Log.log(this,"remove bundle:"+removeBundle);
+        Log.log(this, "remove bundle:" + removeBundle);
     }
 
     public Bundle queryBundleByBundleName(String bundleName) {
-        if(bundleConfig.bundles != null)
+        if (bundleConfig.bundles != null)
             return bundleConfig.bundles.get(bundleName);
         return null;
     }
 
     public Bundle queryBundleName(String className) {
 
-        if(bundleConfig.bundles != null)
-        {
+        if (bundleConfig.bundles != null) {
+            String packageName;
+            int index = className.lastIndexOf(".");
+            if (index < 0)
+                packageName = className;
+            else
+                packageName = className.substring(0, index);
+
+            Bundle result = bundleConfig.exportPackages.get(packageName);
+            if (result != null)
+                return result;
+
             Collection<Bundle> values = bundleConfig.bundles.values();
-            for (Bundle bundle : values) {
-                if(bundle.activities != null && bundle.activities.contains(className)){
-                    return bundle;
+            if (values != null) {
+                for (Bundle bundle : values) {
+                    if (bundle.activities != null && bundle.activities.contains(className)) {
+                        return bundle;
+                    }
                 }
             }
+
         }
 
         return null;
@@ -74,7 +86,7 @@ public class BundleManager {
         try {
             bundleConfig = new BundleConfig();
             bundleConfig.bundles = BundleUtil.generateBundleDict();
-
+            BundleUtil.generateGloableExportPackages(bundleConfig);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,8 +94,8 @@ public class BundleManager {
 
     public void initBundleClassLoader(MedusaClassLoader classLoader) {
         try {
-            boolean bundleChange = localUpdateBundle()?true:false;
-            BundleExecutor.getInstance().loadBundle(bundleConfig.bundles.values(),classLoader);
+            boolean bundleChange = localUpdateBundle() ? true : false;
+            BundleExecutor.getInstance().loadBundle(bundleConfig.bundles.values(), classLoader);
             if (bundleChange)
                 save();
         } catch (Exception e) {
@@ -91,7 +103,7 @@ public class BundleManager {
         }
     }
 
-    public void disableConfig(){
+    public void disableConfig() {
         bundleConfig.sourceMd5 = "";
         save();
     }
@@ -99,19 +111,18 @@ public class BundleManager {
     private void save() {
         File file = Constant.getPluginInfoFile();
         String str = GsonUtil.getGson().toJson(bundleConfig);
-        FileUtil.writeToFileAsync(file,str );
+        FileUtil.writeToFileAsync(file, str);
         Log.log(this, "save bundle info to " + file.getAbsolutePath());
     }
 
-    public boolean load()
-    {
-        try
-        {
+    public boolean load() {
+        try {
             File file = Constant.getPluginInfoFile();
             String content = FileUtil.readFile(file);
             if (TextUtils.isEmpty(content))
                 return false;
             bundleConfig = GsonUtil.getGson().fromJson(content, BundleConfig.class);
+            BundleUtil.generateGloableExportPackages(bundleConfig);
             Log.log(this, "load bundle info from " + file.getAbsolutePath());
             return true;
         } catch (Exception e) {
@@ -121,23 +132,21 @@ public class BundleManager {
         return false;
     }
 
-    private boolean localUpdateBundle() throws Exception
-    {
+    private boolean localUpdateBundle() throws Exception {
         boolean change = false;
         String sourceMd5 = MD5Util.genFileMd5sum(new File(MedusaApplication.getInstance().getApplicationInfo().sourceDir));
 
-        if(TextUtils.equals(sourceMd5,bundleConfig.sourceMd5))
+        if (TextUtils.equals(sourceMd5, bundleConfig.sourceMd5))
             return false;
 
         Map<String, Bundle> dict = BundleUtil.generateBundleDict();
 
         Collection<Bundle> values = bundleConfig.bundles.values();
 
-        for (Bundle bundle : values)
-        {
+        for (Bundle bundle : values) { //bundle 是当前存在data/data的
             Bundle bundleInAsset = dict.remove(bundle.artifactId);
 
-            if(bundleInAsset == null)   //该bundle已经被删除
+            if (bundleInAsset == null)   //该bundle已经被删除
             {
                 BundleExecutor.getInstance().deleteBundle(bundle);
                 change = true;
@@ -153,49 +162,40 @@ public class BundleManager {
 
             if (bundle.isLocalBundle()) //如果是本地bundle 则判断是否需要替换apk
             {
-                File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
-                if (originBundleFile.exists() ) //本地bundle存在更新
+                File assetBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
+                if (assetBundleFile.exists()) //本地bundle存在更新
                 {
-                    String originBundleMd5 = MD5Util.genFileMd5sum(originBundleFile);
-                    if( !TextUtils.equals(originBundleMd5,bundle.md5)){
+                    if (!BundleUtil.compareLocalBundleFile(assetBundleFile,bundleFile)) {
                         //// TODO: 17/3/7 合并 bundleMF -> BUNDLE.JSON
-                        Log.log("BundleManager", "subsitute local bundle " + bundle.artifactId + " from" + originBundleFile.getAbsolutePath());
+                        Log.log("BundleManager", "subsitute local bundle " + bundle.artifactId + " from" + assetBundleFile.getAbsolutePath());
                         //FileUtil.copyFile(new FileInputStream(originBundleFile).getChannel(), new File(Constant.getPluginDir(),BundleUtil.getBundleFileName(bundleInAsset)).getAbsolutePath() );
-                        BundleUtil.syncBundleWithoutMd5(originBundleFile,bundle);
-                        bundle.version = bundleInAsset.version;
-                        bundle.md5 = originBundleMd5;
-                        bundle.activities = bundleInAsset.activities;
-                       // if(!TextUtils.equals(bundle.path,bundleInAsset.path)){
+                        BundleUtil.syncBundle(assetBundleFile, bundle);
+                        // if(!TextUtils.equals(bundle.path,bundleInAsset.path)){
                         File dexOptFile = Constant.getDexOptFile(bundleFile);
-                        if(dexOptFile != null)
+                        if (dexOptFile != null)
                             dexOptFile.delete();
                         bundleFile.delete();
                         //Log.log("BundleManager", "remove local bundle file for update" + bundleFile.getAbsolutePath());
                         bundle.path = bundleInAsset.path;
-                        //}
                         change = true;
                     }
                 }
-            }
-            else
-            {
-                int result = BundleUtil.compareVersion(bundleInAsset.version, bundle.version) ;
-                if(result > 0 ){
-                    File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
-                    if (originBundleFile.exists()) {
+            } else {
+                int result = BundleUtil.compareVersion(bundleInAsset.version, bundle.version);
+                if (result > 0) {
+                    File assetBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundleInAsset.path);
+                    if (assetBundleFile.exists()) {
                         Log.log("BundleManager", "update remote bundle " + bundle.artifactId + ":" + bundle.version + " to " + bundleInAsset.version);
                         bundleFile.delete();
                         File dexOptFile = Constant.getDexOptFile(bundleFile);
-                        if(dexOptFile != null)
+                        if (dexOptFile != null)
                             dexOptFile.delete();
 //                        bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundleInAsset));
-                        BundleUtil.syncBundle(originBundleFile,bundle);
-                        bundle.activities = bundleInAsset.activities;
-                        bundle.version = bundleInAsset.version;
+                        BundleUtil.syncBundle(assetBundleFile, bundle);
                         bundle.path = bundleInAsset.path;
                         change = true;
-                    }else {
-                        Log.error("BundleManager","update remote bundle fail."+originBundleFile.getAbsolutePath()+" not exist!");
+                    } else {
+                        Log.error("BundleManager", "update remote bundle fail." + assetBundleFile.getAbsolutePath() + " not exist!");
                     }
                 }
             }
@@ -203,10 +203,10 @@ public class BundleManager {
         Collection<Bundle> leftValues = dict.values();
         //新增bundle
         for (Bundle tempBundle : leftValues) {
-            Log.log("BundleManager", "add new bundle " + tempBundle.artifactId + ":" + tempBundle.version );
-            bundleConfig.bundles.put(tempBundle.artifactId,tempBundle);
+            Log.log("BundleManager", "add new bundle " + tempBundle.artifactId + ":" + tempBundle.version);
+            bundleConfig.bundles.put(tempBundle.artifactId, tempBundle);
             File originBundleFile = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + tempBundle.path);
-            BundleUtil.syncBundle(originBundleFile,tempBundle);
+            BundleUtil.syncBundle(originBundleFile, tempBundle);
             change = true;
         }
 

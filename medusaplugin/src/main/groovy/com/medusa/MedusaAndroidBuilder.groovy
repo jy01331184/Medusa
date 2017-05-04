@@ -12,9 +12,7 @@ import com.android.ide.common.process.ProcessException
 import com.android.ide.common.process.ProcessOutputHandler
 import com.android.manifmerger.ManifestMerger2
 import com.android.utils.ILogger
-import com.medusa.model.BundleModel
-import com.medusa.task.BaseMedusaTask
-import com.medusa.task.ReadBundlePropTask
+import com.medusa.model.BundleExtention
 import com.medusa.util.Log
 import com.medusa.util.Utils
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -32,7 +30,6 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
     private Project project;
     private final ILogger mLogger;
     private TargetInfo mTargetInfo;
-    private BundleModel bundleModel;
     private String mCreatedBy;
 
     public MedusaAndroidBuilder(AndroidBuilder androidBuilder, AppExtension android, Task task, Project project) {
@@ -53,15 +50,7 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
 
     @Override
     public void processResources(AaptPackageProcessBuilder aaptCommand, boolean enforceUniquePackageName, ProcessOutputHandler processOutputHandler) throws IOException, InterruptedException, ProcessException {
-        bundleModel = BaseMedusaTask.getResult(project,ReadBundlePropTask.class)
-        if (bundleModel == null || Utils.isEmpty(bundleModel.packageId)) {
-            Log.log(this, 'no packageId use super.processResources()')
-            super.processResources(aaptCommand, enforceUniquePackageName, processOutputHandler);
-        } else {
-            //super.processResources(aaptCommand, enforceUniquePackageName, processOutputHandler);
-
-            aapt(aaptCommand)
-        }
+        aapt(aaptCommand)
     }
 
     @Override
@@ -94,7 +83,10 @@ public class MedusaAndroidBuilder extends AndroidBuilder {
             aaptBaseDir = project.parent.projectDir.absolutePath + "/tools/"+aapt
         else
             aaptBaseDir = project.projectDir.absolutePath + "/tools/"+aapt
-        def packageId = bundleModel == null ? 0x7f : bundleModel.packageId
+
+        BundleExtention bundleExtention = project.extensions.findByName('bundle')
+
+        def packageId = bundleExtention == null ? 0x7f : bundleExtention.packageId
         def androidJar = android.getSdkDirectory().absolutePath + "/platforms/" + android.getCompileSdkVersion() + "/android.jar"
         def manifestDir = project.buildDir.absolutePath + "/intermediates/manifests/full/release/AndroidManifest.xml"
         def resDir = ""

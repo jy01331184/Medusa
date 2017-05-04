@@ -20,6 +20,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Properties;
@@ -41,26 +42,22 @@ public class BundleUtil {
         try {
             ZipFile zipFile = new ZipFile(bundleFile);
             InputStream inputStream = zipFile.getInputStream(zipFile.getEntry("META-INF/BUNDLE.MF"));
-            bundle.md5 = MD5Util.genFileMd5sum(bundleFile);
             Properties properties = new Properties();
             properties.load(inputStream);
             bundle.priority = Integer.parseInt(properties.getProperty("priority", Constant.PRIORITY_LAZY + ""));
             String dependencyStr = properties.getProperty("dependency", "");
             bundle.dependencies = Arrays.asList(dependencyStr.split(","));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+            bundle.version = properties.getProperty("version");
+            String activities = properties.getProperty("activities");
+            if(!TextUtils.isEmpty(activities)){
+                bundle.activities = new HashSet<>(Arrays.asList(activities.split(",")));
+            }
+            String exportPackages = properties.getProperty("exportPackages");
+            if(!TextUtils.isEmpty(exportPackages)){
+                bundle.exportPackages = new HashSet<>(Arrays.asList(exportPackages.split(",")));
+            }
 
-    public static void syncBundleWithoutMd5(File bundleFile, Bundle bundle) {
-        try {
-            ZipFile zipFile = new ZipFile(bundleFile);
-            InputStream inputStream = zipFile.getInputStream(zipFile.getEntry("META-INF/BUNDLE.MF"));
-            Properties properties = new Properties();
-            properties.load(inputStream);
-            bundle.priority = Integer.parseInt(properties.getProperty("priority", Constant.PRIORITY_LAZY + ""));
-            String dependencyStr = properties.getProperty("dependency", "");
-            bundle.dependencies = Arrays.asList(dependencyStr.split(","));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -129,6 +126,14 @@ public class BundleUtil {
         return s1Versions.length - s2Versions.length;
     }
 
+    public static boolean compareLocalBundleFile(File f1,File f2){
+        if(!f1.exists() || !f2.exists())
+            return false;
+        if(f1.length() != f2.length())
+            return false;
+        return TextUtils.equals(MD5Util.genFileMd5sum(f1),MD5Util.genFileMd5sum(f2));
+    }
+
     public static void replaceResource(Context context, String clsName) {
         Bundle bundle = BundleManager.getInstance().queryBundleName(clsName);
 
@@ -147,6 +152,19 @@ public class BundleUtil {
         Map<String, Bundle> tempBundles = GsonUtil.getGson().fromJson(str, collectionType);
 
         return tempBundles;
+    }
+
+    public  static void generateGloableExportPackages(BundleConfig bundleConfig){
+        if(bundleConfig.bundles != null){
+            Collection<Bundle> values = bundleConfig.bundles.values();
+            if(values != null){
+                for (Bundle bundle : values) {
+                    for (String pck : bundle.exportPackages) {
+                        bundleConfig.exportPackages.put(pck,bundle);
+                    }
+                }
+            }
+        }
     }
 
     public static boolean copyBundleFile(Bundle bundle, File bundleFile) {

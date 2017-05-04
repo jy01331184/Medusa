@@ -1,5 +1,6 @@
 package com.medusa.bundle;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -11,6 +12,5 @@ public class BundleConfig {
 
     public String sourceMd5;
 
-
-    public transient Map<String,Bundle> components;
+    public transient Map<String,Bundle> exportPackages = new HashMap<>();
 }
