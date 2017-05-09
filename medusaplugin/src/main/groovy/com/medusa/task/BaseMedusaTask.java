@@ -42,8 +42,8 @@ public abstract class BaseMedusaTask {
         return null;
     }
 
-    public static <T> T getResult(Project project,Class<T> cls)
+    public static Object getResult(Project project,Class cls)
     {
-        return (T) caches.get(project.toString()+cls.getName()).getResult();
+        return caches.get(project.toString()+cls.getName()).getResult();
     }
 }

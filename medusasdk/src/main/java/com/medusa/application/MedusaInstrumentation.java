@@ -5,7 +5,6 @@ import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.widget.Toast;
 
 import com.medusa.bundle.Bundle;
 import com.medusa.bundle.BundleExecutor;
@@ -39,7 +38,7 @@ public class MedusaInstrumentation extends Instrumentation {
             com.medusa.bundle.Bundle bundle = BundleManager.getInstance().queryBundleName(className);
             if(bundle!= null && !bundle.loaded)
             {
-                Toast.makeText(MedusaApplication.getInstance(),"懒加载bundle 模拟 3s后加载",Toast.LENGTH_LONG).show();
+                //Toast.makeText(MedusaApplication.getInstance(),"懒加载bundle 模拟 3s后加载",Toast.LENGTH_LONG).show();
                 String lazyClassName = className;
                 className = LazyLoadActivity.class.getName();
                 Activity activity = super.newActivity(cl,className,intent);

@@ -1,7 +1,9 @@
 package com.medusa.bundle;
 
 import com.medusa.application.LazyLoadActivity;
-import com.medusa.application.MedusaApplication;
+import com.medusa.application.MedusaApplicationProxy;
+import com.medusa.application.MedusaBundle;
+import com.medusa.application.MedusaLisenter;
 import com.medusa.classloader.BundleClassLoader;
 import com.medusa.classloader.MedusaClassLoader;
 import com.medusa.util.BundleComparetor;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -47,21 +50,21 @@ public class BundleExecutor extends ThreadPoolExecutor {
     public synchronized void loadBundle(final Bundle bundle, final LazyLoadActivity activity, final String lazyClassName) {
         List<Bundle> tasks = new ArrayList<>();
         tasks.add(bundle);
-        execute(new BundleLoadCallbackRunnable(MedusaApplication.getInstance().getMedClassLoader(), tasks, activity, lazyClassName));
+        execute(new BundleLoadCallbackRunnable(MedusaApplicationProxy.getInstance().getMedClassLoader(), tasks, activity, lazyClassName));
     }
 
-    public synchronized void loadBundle(Collection<Bundle> bundles, MedusaClassLoader classLoader) {
+    public synchronized void loadBundle(Collection<Bundle> bundles, MedusaClassLoader classLoader,MedusaLisenter lisenter) {
         List<Bundle> tasks = new ArrayList<>();
 
         for (Bundle bundle : bundles) {
             if (!bundle.loaded && bundle.priority == Constant.PRIORITY_MAX) {
-                loadBundle(classLoader, bundle);
+                loadBundle(classLoader, bundle,lisenter);
             } else if (!bundle.loaded && bundle.priority < Constant.PRIORITY_LAZY) {
                 tasks.add(bundle);
             }
         }
         Collections.sort(tasks, new BundleComparetor());
-        execute(new BundleLoadRunnable(classLoader, tasks));
+        execute(new BundleLoadRunnable(classLoader, tasks,lisenter));
     }
 
     public void commit() {
@@ -70,13 +73,14 @@ public class BundleExecutor extends ThreadPoolExecutor {
         }
     }
 
-    public void loadBundle(MedusaClassLoader classLoader, Bundle bundle) {
+    public void loadBundle(MedusaClassLoader classLoader, Bundle bundle, MedusaLisenter lisenter) {
         try {
             long time = System.currentTimeMillis();
             File bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundle));
             if (!BundleUtil.copyBundleFile(bundle, bundleFile)) {
                 Log.log(this, "copy bundle fail :" +bundleFile);
                 BundleManager.getInstance().disableConfig();
+                lisenter.onBundleLoad(bundle.artifactId,false);
                 return;
             }
             BundleClassLoader dexClassLoader = new BundleClassLoader(bundle, bundleFile.getAbsolutePath(), Constant.getPluginDir().getAbsolutePath(), bundleFile.getAbsolutePath(), classLoader.getOriginClassLoader(),classLoader);
@@ -84,7 +88,7 @@ public class BundleExecutor extends ThreadPoolExecutor {
             bundle.classLoader = dexClassLoader;
 
             List<String> list = new ArrayList<>();
-            list.add(MedusaApplication.getInstance().getApplicationInfo().sourceDir);
+            list.add(MedusaApplicationProxy.getInstance().getApplication().getApplicationInfo().sourceDir);
             list.add(bundleFile.getAbsolutePath());
 
             if (bundle.dependencies != null) {
@@ -95,7 +99,7 @@ public class BundleExecutor extends ThreadPoolExecutor {
                         list.add(depBundleFile.getAbsolutePath());
                         synchronized (depBundle.loaded) {
                             if (!depBundle.loaded) {
-                                loadBundle(classLoader, depBundle);
+                                loadBundle(classLoader, depBundle,lisenter);
                             }
                         }
                     }
@@ -105,9 +109,24 @@ public class BundleExecutor extends ThreadPoolExecutor {
             BundleResource resources = ReflectUtil.addAsset(bundle, list.toArray(new String[]{}));
             bundle.resources = resources;
             bundle.loaded = true;
+            if(bundle.medusaBundles != null && !bundle.medusaBundles.isEmpty()){
+                Set<String> keys = bundle.medusaBundles.keySet();
+                for (String key : keys) {
+                    String clsName = bundle.medusaBundles.get(key);
+                    try {
+                        MedusaBundle medusaBundle = (MedusaBundle) bundle.classLoader.loadClass(clsName).newInstance();
+                        medusaBundle.onCreate();
+                        MedusaApplicationProxy.getInstance().initMedusaBundle(key,medusaBundle);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }
             Log.log(this, "finish bundle load :" + bundle + "  use " + (System.currentTimeMillis() - time) + "ms");
+            lisenter.onBundleLoad(bundle.artifactId,true);
         } catch (Exception e) {
             e.printStackTrace();
+            lisenter.onBundleLoad(bundle.artifactId,false);
         }
     }
 

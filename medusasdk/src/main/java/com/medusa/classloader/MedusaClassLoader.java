@@ -1,8 +1,8 @@
 package com.medusa.classloader;
 
-import android.content.Context;
-
+import com.medusa.application.MedusaApplicationProxy;
 import com.medusa.bundle.Bundle;
+import com.medusa.bundle.BundleExecutor;
 import com.medusa.bundle.BundleManager;
 
 import java.util.ArrayList;
@@ -21,8 +21,8 @@ public class MedusaClassLoader extends PathClassLoader {
     private Map<String,ClassLoader> cache = new HashMap<>();
     private ClassLoader originClassLoader;
 
-    public MedusaClassLoader(Context context, String dexPath, ClassLoader parent,ClassLoader origin) {
-        super(dexPath,context.getApplicationInfo().nativeLibraryDir, parent);
+    public MedusaClassLoader(String dexPath, String nativeLibraryDir,ClassLoader parent,ClassLoader origin) {
+        super(dexPath,nativeLibraryDir, parent);
         this.originClassLoader = origin;
     }
 
@@ -60,26 +60,26 @@ public class MedusaClassLoader extends PathClassLoader {
             }
             else
             {
-//                synchronized (bundle.loaded){
-//                    if( (!bundle.loaded || bundle.classLoader == null)){
-//                        BundleExecutor.getInstance().loadBundle(this,bundle);
-//                        if(bundle.classLoader != null && bundle.loaded){
-//                            Class<?> cls = bundle.classLoader.loadClass(name);
-//                            if(cls != null)
-//                            {
-//                                //Log.log("MedusaClassLoader","hard load class "+name +" from bundle "+bundle.artifactId);
-//                                return cls;
-//                            }
-//                        }
-//                    }else{
-//                        Class<?> cls = bundle.classLoader.loadClass(name);
-//                        if(cls != null)
-//                        {
-//                            //Log.log("MedusaClassLoader","load class "+name +" from bundle "+bundle.artifactId);
-//                            return cls;
-//                        }
-//                    }
-//                }
+                synchronized (bundle.loaded){
+                    if( (!bundle.loaded || bundle.classLoader == null)){
+                        BundleExecutor.getInstance().loadBundle(this,bundle, MedusaApplicationProxy.getInstance().getLisenter());
+                        if(bundle.classLoader != null && bundle.loaded){
+                            Class<?> cls = bundle.classLoader.loadClass(name);
+                            if(cls != null)
+                            {
+                                //Log.log("MedusaClassLoader","hard load class "+name +" from bundle "+bundle.artifactId);
+                                return cls;
+                            }
+                        }
+                    }else{
+                        Class<?> cls = bundle.classLoader.loadClass(name);
+                        if(cls != null)
+                        {
+                            //Log.log("MedusaClassLoader","load class "+name +" from bundle "+bundle.artifactId);
+                            return cls;
+                        }
+                    }
+                }
             }
         }
 

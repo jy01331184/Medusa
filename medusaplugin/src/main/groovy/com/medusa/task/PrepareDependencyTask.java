@@ -16,8 +16,6 @@ public class PrepareDependencyTask extends BaseMedusaTask {
     @Override
     public void execute(File input, File output) {
 
-        if (input == null || !input.exists())
-            return;
         dependency.clear();
 
         try {

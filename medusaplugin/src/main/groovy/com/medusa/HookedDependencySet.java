@@ -25,7 +25,9 @@ public class HookedDependencySet extends DefaultDependencySet {
     @Override
     public boolean add(Dependency o) {
         String pro = o.getGroup()+":"+o.getName()+":"+o.getVersion()+"@jar";
+        String apk = o.getGroup()+":"+o.getName()+":"+o.getVersion()+"@apk";
         Log.log("BundlePlugin","add provided "+pro);
+        project.getDependencies().add("bundleApk",apk);
         project.getDependencies().add("provided",pro);
         return super.add(o);
     }

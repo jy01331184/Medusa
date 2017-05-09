@@ -3,6 +3,7 @@ package com.medusa.bundle;
 import com.medusa.classloader.BundleClassLoader;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,6 +22,7 @@ public class Bundle {
     public Set<String> activities;
     public Set<String> exportPackages;
     public List<String> dependencies;
+    public Map<String,String> medusaBundles;
 
     public int priority;
 
@@ -40,7 +42,6 @@ public class Bundle {
                 "artifactId='" + artifactId + '\'' +
                 ", version='" + version + '\'' +
                 ", path='" + path + '\'' +
-                ", activities=" + activities +
                 ", dependencies=" + dependencies +
                 ", priority=" + priority +
                 '}';

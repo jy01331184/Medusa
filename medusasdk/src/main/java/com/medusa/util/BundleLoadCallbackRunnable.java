@@ -1,8 +1,9 @@
 package com.medusa.util;
 
 import com.medusa.application.LazyLoadActivity;
-import com.medusa.classloader.MedusaClassLoader;
+import com.medusa.application.MedusaApplicationProxy;
 import com.medusa.bundle.Bundle;
+import com.medusa.classloader.MedusaClassLoader;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public class BundleLoadCallbackRunnable extends BundleLoadRunnable {
 
 
     public BundleLoadCallbackRunnable(MedusaClassLoader classLoader, List<Bundle> bundles,LazyLoadActivity activity,String name) {
-        super(classLoader, bundles);
+        super(classLoader, bundles, MedusaApplicationProxy.getInstance().getLisenter());
         this.activity = activity;
         this.lazyClassName = name;
     }
@@ -25,7 +26,6 @@ public class BundleLoadCallbackRunnable extends BundleLoadRunnable {
     public void run() {
         try
         {
-            Thread.sleep(3000);
             super.run();
             activity.finishFor(lazyClassName);
         }catch (Exception e)

@@ -1,5 +1,6 @@
 package com.medusa.util;
 
+import com.medusa.application.MedusaLisenter;
 import com.medusa.classloader.MedusaClassLoader;
 import com.medusa.bundle.Bundle;
 import com.medusa.bundle.BundleExecutor;
@@ -13,10 +14,12 @@ public class BundleLoadRunnable implements Runnable {
 
     private MedusaClassLoader classLoader;
     private List<Bundle> bundles;
+    private MedusaLisenter lisenter;
 
-    public BundleLoadRunnable(MedusaClassLoader classLoader,List<Bundle> bundles) {
+    public BundleLoadRunnable(MedusaClassLoader classLoader, List<Bundle> bundles, MedusaLisenter lisenter) {
         this.classLoader = classLoader;
         this.bundles = bundles;
+        this.lisenter = lisenter;
     }
 
     @Override
@@ -27,7 +30,7 @@ public class BundleLoadRunnable implements Runnable {
                 synchronized (bundle.loaded){
                     if(!bundle.loaded)
                     {
-                        BundleExecutor.getInstance().loadBundle(classLoader,bundle);
+                        BundleExecutor.getInstance().loadBundle(classLoader,bundle,lisenter);
                     }
                 }
             }

@@ -3,6 +3,10 @@ package com.medusa.task;
 import com.medusa.RapierConstant;
 import com.medusa.util.Log;
 
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.DependencySet;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -56,34 +60,41 @@ public class PrepareBundleTask extends BaseMedusaTask {
     private void collectInfo(File input) throws Exception
     {
         map.clear();
+        Configuration conf = project.getConfigurations().findByName("bundle");
+        DependencySet deps = conf.getDependencies();
+        for (Dependency dep : deps) {
+            String key = dep.getGroup()+":"+dep.getName();
+            String value = key+":"+dep.getVersion();
+            map.put(key,value.trim());
+        }
         File localFile = new File(input,"local.properties");
 
-        File bundleFile = new File(input,"bundle.properties");
-        Log.log(this,"prepareBundle collect info from "+bundleFile.getAbsolutePath());
-        BufferedReader reader = new BufferedReader(new FileReader(bundleFile));
-
-        String line = null;
-        while( (line = reader.readLine()) != null )
-        {
-            String content = line.trim().replace("\n", "");
-            if( !content.startsWith("#") )
-            {
-                String[] tempInfos = content.split(":");
-                if(tempInfos.length >= 2){
-                    String groupId = tempInfos[0];
-                    String artifactId = tempInfos[1];
-                    String bundleKey = groupId + ":" + artifactId;
-                    map.put(bundleKey,content);
-                }
-            }
-        }
-
-        reader.close();
+//        File bundleFile = new File(input,"bundle.properties");
+//        Log.log(this,"prepareBundle collect info from "+bundleFile.getAbsolutePath());
+//        BufferedReader reader = new BufferedReader(new FileReader(bundleFile));
+//
+//        String line = null;
+//        while( (line = reader.readLine()) != null )
+//        {
+//            String content = line.trim().replace("\n", "");
+//            if( !content.startsWith("#") )
+//            {
+//                String[] tempInfos = content.split(":");
+//                if(tempInfos.length >= 2){
+//                    String groupId = tempInfos[0];
+//                    String artifactId = tempInfos[1];
+//                    String bundleKey = groupId + ":" + artifactId;
+//                    map.put(bundleKey,content);
+//                }
+//            }
+//        }
+//
+//        reader.close();
 
         if(localFile.exists())
         {
-            reader = new BufferedReader(new FileReader(localFile));
-
+            BufferedReader reader = new BufferedReader(new FileReader(localFile));
+            String line = null;
             while( (line = reader.readLine()) != null )
             {
                 String content = line.trim().replace("\n", "");
@@ -108,6 +119,11 @@ public class PrepareBundleTask extends BaseMedusaTask {
 
     @Override
     public Object getResult() {
-        return map;
+        return map.values();
+    }
+
+    @Override
+    public String toString() {
+        return "PrepareBundleTask";
     }
 }

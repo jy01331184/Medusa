@@ -5,6 +5,8 @@ import com.medusa.util.BundleUtil
 import com.medusa.util.Log
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Configuration
+import org.json.JSONObject
+
 /**
  * Created by tianyang on 16/8/3.
  */
@@ -75,6 +77,9 @@ public class AddBundleMFTask extends BaseMedusaTask{
         bufferedWriter.writeLine("version="+bundleExtention.version)
         bufferedWriter.writeLine("packageId="+bundleExtention.packageId)
         bufferedWriter.writeLine("priority="+bundleExtention.priority)
+
+        JSONObject jsonObject = new JSONObject(bundleExtention.medusaBundles)
+        bufferedWriter.writeLine("medusaBundles="+jsonObject.toString())
 
         StringBuilder stringBuilder = new StringBuilder();
 

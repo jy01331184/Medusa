@@ -6,8 +6,8 @@ import com.android.builder.core.AndroidBuilder
 import com.android.ide.common.xml.AndroidManifestParser
 import com.android.io.FolderWrapper
 import com.android.xml.AndroidManifest
-import com.medusa.RapierConstant
 import com.medusa.MedusaAndroidBuilder
+import com.medusa.RapierConstant
 import com.medusa.task.BaseMedusaTask
 import com.medusa.task.PrepareBundleTask
 import com.medusa.task.PrepareDependencyTask
@@ -17,6 +17,8 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.DependencySet
 
 public class RapierPlugin implements Plugin<Project> {
 
@@ -30,10 +32,11 @@ public class RapierPlugin implements Plugin<Project> {
         android = o.extensions.findByName("android")
         android.sourceSets{
             main.assets.srcDirs = [main.assets.srcDirs,o.file(RapierConstant.BUNDLE_JSON).parentFile.absolutePath]
-
         }
+
         println("rapier plugin:"+RapierConstant.PLUGIN_VERSION)
-        o.getConfigurations().create('bundle')
+        o.configurations.create('bundle')
+        o.configurations.create('medusa')
         assemableRapierTask.group = 'bundle'
         installRapierTask.group = 'bundle'
         assemableRapierTask.doLast{
@@ -77,6 +80,16 @@ public class RapierPlugin implements Plugin<Project> {
 
 
         o.afterEvaluate{
+            Configuration conf = o.configurations.findByName("bundle");
+            DependencySet deps = conf.getDependencies();
+            List<String> list = new ArrayList<>()
+            for (Dependency dep : deps) {
+                list.add(dep.group+":"+dep.name+":"+dep.version)
+            }
+            Collections.sort(list)
+            prepareBundleTask.inputs.property("bundle",list.toString())
+
+
             installRapierTask.finalizedBy o.tasks.findByName('installRelease')
             assemableRapierTask.finalizedBy o.tasks.findByName('assembleRelease')
 
@@ -96,7 +109,7 @@ public class RapierPlugin implements Plugin<Project> {
                         file = it
                 }
                 Log.log("RapierPlugin",'mergeBundleToLibTask copy to '+file.absolutePath)
-                Configuration bundleConf = o.configurations.getByName('bundle')
+                Configuration bundleConf = o.configurations.getByName('medusa')
                 bundleConf.files.each {
                     if(it.name.endsWith('.apk')){
                         String path = it.absolutePath
@@ -119,17 +132,18 @@ public class RapierPlugin implements Plugin<Project> {
     void makePrepareDependencyTask(Task prepareDependencyTask,Project o){
 
         prepareDependencyTask.doLast{
-            Log.log("RapierPlugin","prepareDependencyTask")
+//            Log.log("RapierPlugin","prepareDependencyTask")
+
             BaseMedusaTask prepareTask = BaseMedusaTask.regist(o,PrepareDependencyTask.class);
             prepareTask.execute(o.file(RapierConstant.TEMP_PROPERTY),null)
             List<String> list = prepareTask.getResult()
 
             for (String dep:list) {
-                o.getDependencies().add('bundle',dep+"@apk")
-                o.getDependencies().add('bundle',dep+":AndroidManifest@xml")
+                o.getDependencies().add('medusa',dep+"@apk")
+                o.getDependencies().add('medusa',dep+":AndroidManifest@xml")
             }
 
-            Configuration bundleConf = o.configurations.getByName('bundle')
+            Configuration bundleConf = o.configurations.getByName('medusa')
 
             Task mergeJniLib = o.tasks.findByName("mergeReleaseJniLibFolders")
             bundleConf.files.each {
@@ -141,24 +155,24 @@ public class RapierPlugin implements Plugin<Project> {
     }
 
     void makePrepareBundleTask(Task prepareBundleTask,Project o){
-
-        prepareBundleTask.inputs.files(RapierConstant.BUNDLE_PROPERTY,RapierConstant.LOCAL_PROPERTY)
+        prepareBundleTask.inputs.files(RapierConstant.LOCAL_PROPERTY)
         prepareBundleTask.outputs.file(RapierConstant.TEMP_PROPERTY)
 
         prepareBundleTask.doLast{
             Log.log("RapierPlugin","prepareBundle")
             BaseMedusaTask prepareTask = BaseMedusaTask.regist(o,PrepareBundleTask.class);
-            prepareTask.execute(o.projectDir,new File(RapierConstant.TEMP_PROPERTY))
+            prepareTask.init(o)
+            prepareTask.execute(o.projectDir,o.file(RapierConstant.TEMP_PROPERTY))
         }
     }
 
     void makePrepareBundleJsonTask(Task task,Project o)
     {
-        task.inputs.file(RapierConstant.TEMP_PROPERTY)
+        task.inputs.files(RapierConstant.TEMP_PROPERTY)
         task.outputs.file(RapierConstant.BUNDLE_JSON)
 
         task.doLast {
-            String json = BundleUtil.readBundleProperty(o,new File(RapierConstant.TEMP_PROPERTY))
+            String json = BundleUtil.readBundleProperty(o,o.file(RapierConstant.TEMP_PROPERTY))
             File file = new File(RapierConstant.BUNDLE_JSON)
             if(!file.getParentFile().exists())
                 file.getParentFile().mkdirs()
@@ -179,7 +193,7 @@ public class RapierPlugin implements Plugin<Project> {
             it.name.equals("androidBuilder")
         }.each {
             Log.log("RapierPlugin",'hookProcessManifest')
-            project.configurations.getByName('bundle').files.each {
+            project.configurations.getByName('medusa').files.each {
                 if(it.absolutePath.endsWith(".xml")){
                     rTask.inputs.file(it)
                 }

@@ -1,6 +1,6 @@
 package com.medusa.util;
 
-import com.medusa.application.MedusaApplication;
+import com.medusa.application.MedusaApplicationProxy;
 
 import java.io.File;
 
@@ -11,7 +11,7 @@ public class Constant {
 
     public static File getPluginDir()
     {
-        File optDir = new File(MedusaApplication.getInstance().getFilesDir(),"plugins");
+        File optDir = new File(MedusaApplicationProxy.getInstance().getApplication().getFilesDir(),"plugins");
         if(!optDir.exists())
             optDir.mkdir();
         return optDir;

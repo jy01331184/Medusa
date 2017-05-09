@@ -4,7 +4,7 @@ import android.content.Context;
 import android.text.TextUtils;
 
 import com.google.gson.reflect.TypeToken;
-import com.medusa.application.MedusaApplication;
+import com.medusa.application.MedusaApplicationProxy;
 import com.medusa.util.Constant;
 import com.medusa.util.FileUtil;
 import com.medusa.util.GsonUtil;
@@ -21,7 +21,9 @@ import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -47,6 +49,18 @@ public class BundleUtil {
             bundle.priority = Integer.parseInt(properties.getProperty("priority", Constant.PRIORITY_LAZY + ""));
             String dependencyStr = properties.getProperty("dependency", "");
             bundle.dependencies = Arrays.asList(dependencyStr.split(","));
+            String bundleStr = properties.getProperty("medusaBundles", "");
+            bundle.medusaBundles = new HashMap<>();
+
+            if(!TextUtils.isEmpty(bundleStr)){
+                JSONObject jsonObject = new JSONObject(bundleStr);
+                Iterator<String> keys = jsonObject.keys();
+                while (keys.hasNext()){
+                    String key = keys.next();
+                    bundle.medusaBundles.put(key,jsonObject.optString(key));
+                }
+            }
+
             bundle.version = properties.getProperty("version");
             String activities = properties.getProperty("activities");
             if(!TextUtils.isEmpty(activities)){
@@ -148,7 +162,7 @@ public class BundleUtil {
     public static Map<String, Bundle> generateBundleDict() {
         Type collectionType = new TypeToken<Map<String, Bundle>>() {
         }.getType();
-        String str = FileUtil.readAssetFile(MedusaApplication.getInstance(), "bundle.json");
+        String str = FileUtil.readAssetFile(MedusaApplicationProxy.getInstance().getApplication(), "bundle.json");
         Map<String, Bundle> tempBundles = GsonUtil.getGson().fromJson(str, collectionType);
 
         return tempBundles;
@@ -159,8 +173,10 @@ public class BundleUtil {
             Collection<Bundle> values = bundleConfig.bundles.values();
             if(values != null){
                 for (Bundle bundle : values) {
-                    for (String pck : bundle.exportPackages) {
-                        bundleConfig.exportPackages.put(pck,bundle);
+                    if(bundle.exportPackages != null){
+                        for (String pck : bundle.exportPackages) {
+                            bundleConfig.exportPackages.put(pck,bundle);
+                        }
                     }
                 }
             }
@@ -170,7 +186,7 @@ public class BundleUtil {
     public static boolean copyBundleFile(Bundle bundle, File bundleFile) {
         try {
             if (!bundleFile.exists()) {
-                File file = new File(MedusaApplication.getInstance().getApplicationInfo().nativeLibraryDir + "/" + bundle.path);
+                File file = new File(MedusaApplicationProxy.getInstance().getApplication().getApplicationInfo().nativeLibraryDir + "/" + bundle.path);
                 FileUtil.copyFile(new FileInputStream(file).getChannel(), bundleFile.getAbsolutePath());
                 Log.log("BundleManager", "copy bundle " + bundle.artifactId + " to" + bundleFile.getAbsolutePath());
             }

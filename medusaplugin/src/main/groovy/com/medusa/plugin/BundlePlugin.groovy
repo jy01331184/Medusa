@@ -12,6 +12,7 @@ import com.medusa.model.BundleExtention
 import com.medusa.task.AddBundleMFTask
 import com.medusa.task.BaseMedusaTask
 import com.medusa.util.Log
+import com.medusa.util.Utils
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -46,6 +47,7 @@ public class BundlePlugin implements Plugin<Project> {
 
         println("bundle plugin:"+RapierConstant.PLUGIN_VERSION)
         o.configurations.create('bundle')
+        o.configurations.create('bundleApk')
 
         makePublicXml(o)
         makeAaptParms(o)
@@ -179,7 +181,7 @@ public class BundlePlugin implements Plugin<Project> {
                 repositories {
                     mavenDeployer {
                         //repository(url: project.uri(defaultLocalMavenRepositoryLocator.localMavenRepository.absolutePath))
-                        repository (url: REMOTE_MAVEN_URL){
+                        repository (url: (Utils.isEmpty(bundleModel.mavenUrl)?REMOTE_MAVEN_URL:bundleModel.mavenUrl)){
                             authentication(userName: "admin", password: "123")
                         }
                         pom.version = bundleModel.version
@@ -251,7 +253,7 @@ public class BundlePlugin implements Plugin<Project> {
         project.afterEvaluate {
             AaptOptions opt = android.aaptOptions
             project.configurations.each {
-                if(it.name.startsWith("bundle")){
+                if(it.name.startsWith("bundleApk")){
                     List<String> parms = new ArrayList<>()
                     it.files.each {
                         parms.add('-I')

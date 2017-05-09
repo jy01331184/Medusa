@@ -1,12 +1,12 @@
 package com.medusa.util;
 
-import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
 
-import com.medusa.application.MedusaApplication;
+import com.medusa.application.MedusaApplicationProxy;
 import com.medusa.application.MedusaInstrumentation;
 import com.medusa.bundle.Bundle;
 import com.medusa.bundle.BundleResource;
@@ -19,9 +19,9 @@ import java.lang.reflect.Method;
  */
 public class ReflectUtil {
 
-    public static void setBoostClassLoader(Application application,ClassLoader classLoader)
+    public static boolean setBoostClassLoader(ContextWrapper context, ClassLoader classLoader)
     {
-        Object loadedApk = getLoadedApk(application.getBaseContext());
+        Object loadedApk = getLoadedApk(context.getBaseContext());
 
         Field classloaderField = null;
         try {
@@ -30,7 +30,10 @@ public class ReflectUtil {
             classloaderField.set(loadedApk,classLoader);
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
+
+        return true;
     }
 
     public static Object getActivityThread(Context context)
@@ -69,7 +72,7 @@ public class ReflectUtil {
                 //Log.log("BundleResource",bundle.artifactId+" add path:"+dir+"  res:"+obj);
             }
 
-            BundleResource resources = new BundleResource(assetManager, MedusaApplication.getInstance().getResources().getDisplayMetrics(), MedusaApplication.getInstance().getResources().getConfiguration(),bundle);
+            BundleResource resources = new BundleResource(assetManager, MedusaApplicationProxy.getInstance().getApplication().getResources().getDisplayMetrics(), MedusaApplicationProxy.getInstance().getApplication().getResources().getConfiguration(),bundle);
             return resources;
         } catch (Exception e) {
             e.printStackTrace();
@@ -97,7 +100,7 @@ public class ReflectUtil {
     {
         try
         {
-            Object activityThread = MedusaApplication.getInstance().getClassLoader().loadClass("android.app.ActivityThread").getDeclaredMethod("currentActivityThread", new Class[]{}).invoke(null);
+            Object activityThread = MedusaApplicationProxy.getInstance().getApplication().getClassLoader().loadClass("android.app.ActivityThread").getDeclaredMethod("currentActivityThread", new Class[]{}).invoke(null);
 
             Field insField = activityThread.getClass().getDeclaredField("mInstrumentation");
             insField.setAccessible(true);
