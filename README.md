@@ -1,4 +1,4 @@
-<div align=center><img src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1487937880420&di=eac044d2ea0a05eafb9c8b1603e93fb8&imgtype=0&src=http%3A%2F%2Fimg1.cache.netease.com%2Fcatchpic%2FD%2FDE%2FDE30E317FFFACFBD21FFD9D09E08DC90.jpg">
+<div align=center><img src="https://github.com/jy01331184/Medusa/blob/master/image/logo.jpeg?raw=true">
 </div>
 <div align=center>
   <h1>Medusa --美杜莎 基于gradle构建的Android插件化实现</h1>
