@@ -3,30 +3,27 @@ package com.medusa.bundle;
 import android.content.Context;
 import android.text.TextUtils;
 
-import com.google.gson.reflect.TypeToken;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.medusa.application.MedusaApplicationProxy;
 import com.medusa.util.Constant;
 import com.medusa.util.FileUtil;
-import com.medusa.util.GsonUtil;
 import com.medusa.util.Log;
-import com.medusa.util.MD5Util;
 import com.medusa.util.ReflectUtil;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 /**
@@ -41,62 +38,54 @@ public class BundleUtil {
      * @param bundle
      */
     public static void syncBundle(File bundleFile, Bundle bundle) {
+        ZipFile zipFile = null;
+        InputStream inputStream = null;
         try {
-            ZipFile zipFile = new ZipFile(bundleFile);
-            InputStream inputStream = zipFile.getInputStream(zipFile.getEntry("META-INF/BUNDLE.MF"));
+            zipFile = new ZipFile(bundleFile);
+            inputStream = zipFile.getInputStream(zipFile.getEntry("META-INF/BUNDLE.MF"));
             Properties properties = new Properties();
             properties.load(inputStream);
             bundle.priority = Integer.parseInt(properties.getProperty("priority", Constant.PRIORITY_LAZY + ""));
             String dependencyStr = properties.getProperty("dependency", "");
             bundle.dependencies = Arrays.asList(dependencyStr.split(","));
+
             String bundleStr = properties.getProperty("medusaBundles", "");
             bundle.medusaBundles = new HashMap<>();
 
-            if(!TextUtils.isEmpty(bundleStr)){
-                JSONObject jsonObject = new JSONObject(bundleStr);
-                Iterator<String> keys = jsonObject.keys();
-                while (keys.hasNext()){
-                    String key = keys.next();
-                    bundle.medusaBundles.put(key,jsonObject.optString(key));
+            if (!TextUtils.isEmpty(bundleStr)) {
+                JSONObject jsonObject = JSON.parseObject(bundleStr);
+                Set<String> keys = jsonObject.keySet();
+
+                for (String key : keys) {
+                    bundle.medusaBundles.put(key, jsonObject.getString(key));
                 }
             }
 
             bundle.version = properties.getProperty("version");
+            bundle.md5 = properties.getProperty("md5");
             String activities = properties.getProperty("activities");
-            if(!TextUtils.isEmpty(activities)){
+            if (!TextUtils.isEmpty(activities)) {
                 bundle.activities = new HashSet<>(Arrays.asList(activities.split(",")));
             }
             String exportPackages = properties.getProperty("exportPackages");
-            if(!TextUtils.isEmpty(exportPackages)){
+            if (!TextUtils.isEmpty(exportPackages)) {
                 bundle.exportPackages = new HashSet<>(Arrays.asList(exportPackages.split(",")));
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+                if (zipFile != null) {
+                    zipFile.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
-    }
-
-    public static Bundle readFromJson(JSONObject jsonObject) {
-        if (jsonObject == null)
-            return null;
-
-        Bundle bundle = new Bundle();
-
-        bundle.version = jsonObject.optString("version");
-        bundle.artifactId = jsonObject.optString("artifactId");
-        bundle.groupId = jsonObject.optString("groupId");
-        bundle.path = jsonObject.optString("path");
-
-        JSONArray array = jsonObject.optJSONArray("activities");
-        Set<String> activities = new HashSet<String>();
-
-        for (int i = 0; i < array.length(); i++) {
-            activities.add(array.optString(i));
-        }
-        bundle.activities = activities;
-
-        return bundle;
     }
 
     public static String getBundleFileName(Bundle bundle) {
@@ -140,42 +129,108 @@ public class BundleUtil {
         return s1Versions.length - s2Versions.length;
     }
 
-    public static boolean compareLocalBundleFile(File f1,File f2){
-        if(!f1.exists() || !f2.exists())
-            return false;
-        if(f1.length() != f2.length())
-            return false;
-        return TextUtils.equals(MD5Util.genFileMd5sum(f1),MD5Util.genFileMd5sum(f2));
+    public static boolean compareLocalBundle(Bundle bundleInAsset, Bundle bundle) {
+        if (bundleInAsset.isLocalBundle() && bundle.isLocalBundle()) {
+
+            if (TextUtils.isEmpty(bundle.md5)) {
+                return true;
+            }
+
+            File assetBundleFile = Constant.getBundleFile(bundleInAsset);
+
+            if (!TextUtils.equals(readBundleMD5(assetBundleFile), bundle.md5)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static String readBundleMD5(File file) {
+        ZipFile zipFile = null;
+        InputStream ins = null;
+        String md5 = null;
+        try {
+            zipFile = new ZipFile(file);
+            ZipEntry entry = zipFile.getEntry("META-INF/BUNDLE.MF");
+            ins = zipFile.getInputStream(entry);
+            Properties properties = new Properties();
+            properties.load(ins);
+            md5 = properties.getProperty("md5");
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (ins != null) {
+                    ins.close();
+                }
+                if (zipFile != null) {
+                    zipFile.close();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return md5;
+    }
+
+    public static String readRapierMD5(File file) {
+        ZipFile zipFile = null;
+        String md5 = null;
+        try {
+            zipFile = new ZipFile(file);
+            ZipEntry entry = zipFile.getEntry("META-INF/RAPIER.MF");
+            InputStream ins = zipFile.getInputStream(entry);
+            Properties properties = new Properties();
+            properties.load(ins);
+            md5 = properties.getProperty("md5");
+            ins.close();
+            zipFile.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (zipFile != null) {
+                try {
+                    zipFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return md5;
     }
 
     public static void replaceResource(Context context, String clsName) {
         Bundle bundle = BundleManager.getInstance().queryBundleName(clsName);
 
         if (bundle != null) {
-            File bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundle));
-            if (bundleFile.exists()) {
-                ReflectUtil.replaceResource(context, bundle.resources);
-            }
+            ReflectUtil.replaceResource(context, bundle.resources);
+            //File bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundle));
+//            Log.log("BundleUtil","replace res:"+bundle.resources+"-"+bundleFile.exists());
+//            if (bundleFile.exists()) {
+//
+//            }
         }
     }
 
     public static Map<String, Bundle> generateBundleDict() {
-        Type collectionType = new TypeToken<Map<String, Bundle>>() {
-        }.getType();
+//        Type collectionType = new TypeToken<Map<String, Bundle>>() {
+//        }.getType();
         String str = FileUtil.readAssetFile(MedusaApplicationProxy.getInstance().getApplication(), "bundle.json");
-        Map<String, Bundle> tempBundles = GsonUtil.getGson().fromJson(str, collectionType);
+        Map<String, Bundle> tempBundles = JSON.parseObject(str, new TypeReference<Map<String, Bundle>>() {
+        });
 
         return tempBundles;
     }
 
-    public  static void generateGloableExportPackages(BundleConfig bundleConfig){
-        if(bundleConfig.bundles != null){
+    public static void generateGloableExportPackages(BundleConfig bundleConfig) {
+        if (bundleConfig.bundles != null) {
             Collection<Bundle> values = bundleConfig.bundles.values();
-            if(values != null){
+            if (values != null) {
                 for (Bundle bundle : values) {
-                    if(bundle.exportPackages != null){
+                    if (bundle.exportPackages != null) {
                         for (String pck : bundle.exportPackages) {
-                            bundleConfig.exportPackages.put(pck,bundle);
+                            bundleConfig.exportPackages.put(pck, bundle);
                         }
                     }
                 }

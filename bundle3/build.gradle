@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'maven'
 apply plugin: 'medusa.bundle'
 
 android {
@@ -32,15 +31,16 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.medusa.sdk:medusasdk:1.0.3@jar'
+    bundle 'com.medusa:medusasdk:0.0.0'
+    bundle 'com.bundle2:bundle2:0.0.0'
 }
 
 bundle{
     name = 'bundle3'
-    packageId = 30
+    packageId = 101
     groupId = 'com.bundle3'
     version = '1.0.2'
     priority = 1747
     exportPackages = "medusa.com.bundle3"
-    medusaBundles = ["1802":"medusa.com.bundle3.MB3"]
+    medusaBundles = ["1747":"medusa.com.bundle3.KDBundle"]
 }

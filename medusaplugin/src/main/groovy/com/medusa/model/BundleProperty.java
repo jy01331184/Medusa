@@ -11,16 +11,17 @@ public class BundleProperty {
     public String groupId;
     public String version;
     public String path;
+    public boolean slink;
 
 
-    public JSONObject toJson()
-    {
+    public JSONObject toJson() {
         JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("groupId",groupId);
-        jsonObject.put("artifactId",artifactId);
-        jsonObject.put("version",version);
-        jsonObject.put("path",path);
+        jsonObject.put("groupId", groupId);
+        jsonObject.put("artifactId", artifactId);
+        jsonObject.put("version", version);
+        jsonObject.put("path", path);
+        jsonObject.put("slink", slink);
 
         return jsonObject;
     }

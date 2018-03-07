@@ -25,17 +25,13 @@ public class BundleLoadRunnable implements Runnable {
     @Override
     public void run() {
         for (Bundle bundle : bundles) {
-            try
-            {
-                synchronized (bundle.loaded){
-                    if(!bundle.loaded)
-                    {
-                        BundleExecutor.getInstance().loadBundle(classLoader,bundle,lisenter);
+            try {
+                synchronized (bundle.loaded) {
+                    if (!bundle.loaded) {
+                        BundleExecutor.getInstance().loadBundle(classLoader, bundle, lisenter);
                     }
                 }
-            }
-            catch (Exception e)
-            {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

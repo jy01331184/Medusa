@@ -1,13 +1,14 @@
-package com.medusa;
+package com.bundle1;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
-public class LoadingActivity extends Activity {
+import com.medusa.bundle.BundleActivity;
+
+public class LoadingActivity extends BundleActivity {
 
     private BroadcastReceiver receiver;
 

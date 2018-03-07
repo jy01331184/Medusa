@@ -5,19 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFF1FF"
-    >
+>
 
     <TextView
-
-        android:textSize="18sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World! this is bundle2"/>
+        android:text="Hello World! this is bundle2"
+        android:textSize="18sp"/>
     <!--android:text="@medusa.com.bundle3:string/bundle"-->
     <Button
-        android:layout_centerInParent="true"
         android:id="@+id/btn"
-
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"/>
 </RelativeLayout>

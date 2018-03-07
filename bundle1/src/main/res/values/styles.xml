@@ -13,8 +13,8 @@
     <style name="mstyle">
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowBackground">@color/colorPrimaryDark</item>
-        <item name="android:windowAnimationStyle">@style/as</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item>
+        <!--<item name="android:windowAnimationStyle">@style/as</item>-->
+        <!--<item name="android:statusBarColor">@color/colorPrimary</item>-->
     </style>
 
     <style name="as" parent="android:Animation">
@@ -22,12 +22,9 @@
         <item name="@android:windowExitAnimation">@android:anim/slide_out_right</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-    </style>
+    <!--<style name="AppTheme.NoActionBar">-->
+        <!--<item name="windowActionBar">false</item>-->
+        <!--<item name="windowNoTitle">true</item>-->
+    <!--</style>-->
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 </resources>

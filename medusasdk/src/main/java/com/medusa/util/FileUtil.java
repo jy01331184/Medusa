@@ -2,6 +2,9 @@ package com.medusa.util;
 
 import android.content.Context;
 
+import com.alibaba.fastjson.JSON;
+import com.medusa.bundle.BundleConfig;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -21,10 +24,10 @@ public class FileUtil {
     public static void copyFile(BufferedInputStream inputStream, File file) throws IOException {
         FileOutputStream fileOutputStream = null;
         try {
-            if(!file.exists()) {
+            if (!file.exists()) {
                 file.createNewFile();
             }
-            fileOutputStream = new FileOutputStream(file,false);
+            fileOutputStream = new FileOutputStream(file, false);
             byte[] buffer = new byte[8192];
             int len = 0;
             while ((len = inputStream.read(buffer)) > 0) {
@@ -34,12 +37,11 @@ public class FileUtil {
         } finally {
             if (null != fileOutputStream) {
                 fileOutputStream.close();
-                fileOutputStream = null;
             }
         }
     }
 
-    public static void copyFile(FileChannel inChannel, String str) throws IOException{
+    public static void copyFile(FileChannel inChannel, String str) throws IOException {
         FileChannel outChannel = null;
         try {
             outChannel = new FileOutputStream(str).getChannel();
@@ -47,13 +49,11 @@ public class FileUtil {
         } finally {
             if (null != outChannel) {
                 outChannel.close();
-                outChannel = null;
             }
         }
     }
 
-    public static String readAssetFile(Context context, String path)
-    {
+    public static String readAssetFile(Context context, String path) {
         try {
             InputStream is = context.getAssets().open("bundle.json");
             BufferedReader bis = new BufferedReader(new InputStreamReader(is));
@@ -61,7 +61,7 @@ public class FileUtil {
             StringBuilder builder = new StringBuilder();
 
             String line = null;
-            while( (line = bis.readLine()) != null )
+            while ((line = bis.readLine()) != null)
                 builder.append(line);
             bis.close();
             return builder.toString();
@@ -71,9 +71,8 @@ public class FileUtil {
         return null;
     }
 
-    public static String readFile(File file)
-    {
-        if(file == null || !file.exists())
+    public static String readFile(File file) {
+        if (file == null || !file.exists())
             return null;
         try {
             InputStream is = new FileInputStream(file);
@@ -82,7 +81,7 @@ public class FileUtil {
             StringBuilder builder = new StringBuilder();
 
             String line = null;
-            while( (line = bis.readLine()) != null )
+            while ((line = bis.readLine()) != null)
                 builder.append(line);
             bis.close();
             return builder.toString();
@@ -92,23 +91,38 @@ public class FileUtil {
         return null;
     }
 
-    public static void writeToFile(File file,String content)
-    {
+    private static boolean writeToFile(File file, String content) {
+        BufferedWriter writer = null;
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer = new BufferedWriter(new FileWriter(file));
             writer.write(content);
-            writer.close();
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
+            return false;
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
+
+        return true;
     }
 
-    public static void writeToFileAsync(final File file, final String content){
-        new Thread(){
+    public static void writeToFileAsync(final File file, final BundleConfig bundleConfig) {
+        new Thread() {
             @Override
             public void run() {
-                writeToFile(file,content);
+
+                String str = JSON.toJSONString(bundleConfig);
+                File tempFile = new File(file.getParentFile().getAbsolutePath() + "/" + file.getName() + ".bak");
+                if (writeToFile(tempFile, str)) {
+                    tempFile.renameTo(file);
+                    Log.log("FileUtil", "writeToFileAsync to " + file.getAbsolutePath());
+                }
             }
         }.start();
     }

@@ -10,11 +10,11 @@ public class Log {
     public static void log(Object caller,String str)
     {
         if(Debug)
-            System.out.println("    ["+caller+"] :"+str);
+            System.out.println("["+caller+"] :"+str);
     }
 
     public static void error(Object caller,String str)
     {
-        System.err.println("    ["+caller+"] :"+str);
+        System.err.println("["+caller+"] :"+str);
     }
 }

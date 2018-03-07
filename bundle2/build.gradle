@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'maven'
 apply plugin: 'medusa.bundle'
 
 android {
@@ -30,7 +29,7 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.medusaCfg
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -39,7 +38,8 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.medusa.sdk:medusasdk:1.0.1@jar'
+    bundle 'com.medusa:medusasdk:0.0.0'
+    bundle 'com.bundle3:bundle3:0.0.0'
 //    bundle 'com.bundle3:bundle3:0.0.0@apk'
 
 //    bundle 'com.bundle3:bundle3:0.0.0@apk'
@@ -48,7 +48,8 @@ bundle{
     name = 'bundle2'
     packageId = 100
     groupId = 'com.bundle2'
-    version = '1.0.25'
-    priority = 100
+    version = '1.1.0'
+    priority = 1747
+    medusaBundles = ["1802":"com.bundle2.LBJBundle"]
     exportPackages = "com.bundle2"
 }

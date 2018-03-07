@@ -1,12 +1,7 @@
-import org.gradle.api.internal.artifacts.DefaultPublishArtifactSet
-import org.gradle.api.internal.artifacts.mvnsettings.DefaultLocalMavenRepositoryLocator
-import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenFileLocations
-import org.gradle.api.internal.artifacts.mvnsettings.DefaultMavenSettingsProvider
-import org.gradle.api.internal.artifacts.mvnsettings.LocalMavenRepositoryLocator
-import org.gradle.api.internal.artifacts.publish.DefaultPublishArtifact
 
-apply plugin: 'com.android.library'
-apply plugin: 'maven'
+apply plugin: 'com.android.application'
+apply plugin: 'medusa.bundle'
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
@@ -17,8 +12,17 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    signingConfigs {
+        medusaCfg {
+            storeFile file("../medusa.keystore")
+            storePassword "3666161"
+            keyAlias "medusa.keystore"
+            keyPassword "3666161"
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.medusaCfg
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -27,50 +31,59 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.google.code.gson:gson:2.7'
+//    provided 'com.google.code.gson:gson:2.7'
+    provided group: 'com.alibaba', name: 'fastjson', version: '1.2.39'
 }
 
-group='com.medusa.sdk'
-version='1.0.3'
-def mavenLocalRepo = ''
+bundle{
+    name = 'medusasdk'
+    packageId = 125
+    groupId = 'com.medusa'
+    version = '1.0.4'
+    priority = 0
+}
 
-afterEvaluate{
-
-    DefaultMavenFileLocations locations = new DefaultMavenFileLocations()
-    DefaultMavenSettingsProvider provider = new DefaultMavenSettingsProvider(locations)
-    LocalMavenRepositoryLocator locator = new DefaultLocalMavenRepositoryLocator(provider)
-
-    mavenLocalRepo = locator.localMavenRepository.absolutePath
-    uploadArchives {
-        repositories {
-            mavenDeployer {
+//group='com.medusa.sdk'
+//version='1.0.3'
+//def mavenLocalRepo = ''
+//
+//afterEvaluate{
+//
+//    DefaultMavenFileLocations locations = new DefaultMavenFileLocations()
+//    DefaultMavenSettingsProvider provider = new DefaultMavenSettingsProvider(locations)
+//    LocalMavenRepositoryLocator locator = new DefaultLocalMavenRepositoryLocator(provider)
+//
+//    mavenLocalRepo = locator.localMavenRepository.absolutePath
+//    uploadArchives {
+//        repositories {
+//            mavenDeployer {
 //                repository (url: uri(mavenLocalRepo))
-                repository (url: 'http://localhost:8081/repository/maven-releases/'){
-                    authentication(userName: "admin", password: "123")
-                }
-            }
-        }
-    }
-
-    Task uploadArchivesTask = tasks.findByName("uploadArchives")
-    uploadArchivesTask.doFirst {
-        Date date = new Date()
-        def minify = true
-        android.buildTypes.each {
-            if (it.name.equals("release")) {
-                minify = it.minifyEnabled
-            }
-        }
-        DefaultPublishArtifactSet ass = it.configuration.getArtifacts()
-
-        Task transformDex = tasks.findByName('transformClassesAndResourcesWithSyncLibJarsForRelease')
-        transformDex.outputs.files.files.each {
-            if(it.name.contains("classes.jar"))
-            {
-                DefaultPublishArtifact jarFileArtifact = new DefaultPublishArtifact('', 'jar', 'jar', '', date, it, new Object[0])
-                ass.add(jarFileArtifact)
-                println("==="+it.absolutePath)
-            }
-        }
-    }
-}
+////                repository (url: 'http://localhost:8081/repository/maven-releases/'){
+////                    authentication(userName: "admin", password: "123")
+////                }
+//            }
+//        }
+//    }
+//
+//    Task uploadArchivesTask = tasks.findByName("uploadArchives")
+//    uploadArchivesTask.doFirst {
+//        Date date = new Date()
+//        def minify = true
+//        android.buildTypes.each {
+//            if (it.name.equals("release")) {
+//                minify = it.minifyEnabled
+//            }
+//        }
+//        DefaultPublishArtifactSet ass = it.configuration.getArtifacts()
+//
+//        Task transformDex = tasks.findByName('transformClassesAndResourcesWithSyncLibJarsForRelease')
+//        transformDex.outputs.files.files.each {
+//            if(it.name.contains("classes.jar"))
+//            {
+//                DefaultPublishArtifact jarFileArtifact = new DefaultPublishArtifact('', 'jar', 'jar', '', date, it, new Object[0])
+//                ass.add(jarFileArtifact)
+//                println("==="+it.absolutePath)
+//            }
+//        }
+//    }
+//}

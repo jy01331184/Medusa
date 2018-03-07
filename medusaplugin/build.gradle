@@ -9,7 +9,7 @@ apply plugin: 'maven'
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile 'com.android.tools.build:gradle:1.5.0'
+    compile 'com.android.tools.build:gradle:2.1.3'
     //compile 'org.javassist:javassist:3.20.0-GA'
     compile group: 'org.json', name: 'json', version: '20160212'
 }
@@ -33,10 +33,10 @@ afterEvaluate{
     uploadArchives {
         repositories {
             mavenDeployer {
-//                repository (url: uri(mavenLocalRepo))
-                repository (url: 'http://localhost:8081/repository/maven-releases/'){
-                    authentication(userName: "admin", password: "123")
-                }
+                repository (url: uri(mavenLocalRepo))
+//                repository (url: 'http://localhost:8081/repository/maven-releases/'){
+//                    authentication(userName: "admin", password: "123")
+//                }
             }
         }
     }

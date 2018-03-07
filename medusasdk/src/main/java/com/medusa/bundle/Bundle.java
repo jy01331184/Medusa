@@ -23,6 +23,8 @@ public class Bundle {
     public Set<String> exportPackages;
     public List<String> dependencies;
     public Map<String,String> medusaBundles;
+    public boolean slink;
+    public String md5;
 
     public int priority;
 

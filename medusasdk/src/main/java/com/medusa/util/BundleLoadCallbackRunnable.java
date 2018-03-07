@@ -1,6 +1,9 @@
 package com.medusa.util;
 
+import android.content.Intent;
+
 import com.medusa.application.LazyLoadActivity;
+import com.medusa.application.MedusaAgent;
 import com.medusa.application.MedusaApplicationProxy;
 import com.medusa.bundle.Bundle;
 import com.medusa.classloader.MedusaClassLoader;
@@ -12,24 +15,29 @@ import java.util.List;
  */
 public class BundleLoadCallbackRunnable extends BundleLoadRunnable {
 
-    private LazyLoadActivity activity;
-    private String lazyClassName;
+    private String medusaBundleId;
+    private String lazyWaitValue;
+    private android.os.Bundle param;
 
 
-    public BundleLoadCallbackRunnable(MedusaClassLoader classLoader, List<Bundle> bundles,LazyLoadActivity activity,String name) {
+    public BundleLoadCallbackRunnable(MedusaClassLoader classLoader, List<Bundle> bundles, String medusaBundleId, String lazyWaitValue, android.os.Bundle param) {
         super(classLoader, bundles, MedusaApplicationProxy.getInstance().getLisenter());
-        this.activity = activity;
-        this.lazyClassName = name;
+        this.medusaBundleId = medusaBundleId;
+        this.lazyWaitValue = lazyWaitValue;
+        this.param = param;
     }
 
     @Override
     public void run() {
-        try
-        {
+        try {
             super.run();
-            activity.finishFor(lazyClassName);
-        }catch (Exception e)
-        {
+            Intent intent = new Intent(LazyLoadActivity.ACTION);
+            intent.putExtra(LazyLoadActivity.KEY_MEDUSA_BUNDLE_ID, medusaBundleId);
+            intent.putExtra(LazyLoadActivity.KEY_MEDUSA_BUNDLE_PARAM, param);
+            intent.putExtra(LazyLoadActivity.KEY, lazyWaitValue);
+            MedusaAgent.getInstance().getApplication().sendStickyBroadcast(intent);
+            System.out.println("after send:"+System.currentTimeMillis());
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

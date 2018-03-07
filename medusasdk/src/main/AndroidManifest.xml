@@ -1,15 +1,11 @@
 <manifest package="com.medusa.sdk"
           xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <uses-permission android:name="android.permission.BROADCAST_STICKY"></uses-permission>
     <application
 
         >
         <activity
-
-
             android:name="com.medusa.application.LazyLoadActivity">
-
-
         </activity>
     </application>
 

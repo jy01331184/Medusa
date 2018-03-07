@@ -1,6 +1,7 @@
 package com.medusa.util;
 
 import com.medusa.model.BundleProperty;
+import com.medusa.model.RapierExtention;
 
 import org.gradle.api.Project;
 import org.json.JSONObject;
@@ -10,10 +11,16 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +49,7 @@ public class BundleUtil {
             BufferedReader reader = new BufferedReader(new FileReader(mergeFile));
 
             String line = null;
+            RapierExtention rapierExtention = (RapierExtention) project.getExtensions().findByName("rapier");
 
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -56,7 +64,9 @@ public class BundleUtil {
                     property.artifactId = artifactId;
                     property.version = version;
 
-                    property.path = "lib"+artifactId+"-"+version+".so";
+                    property.path = "lib" + artifactId + "-" + version + ".so";
+
+                    property.slink = rapierExtention.staticLink.contains(groupId + ":" + artifactId);
 
 //                    Set<File> bundleDeps = project.getConfigurations().getByName("bundle").getFiles();
 //                    for (File file : bundleDeps) {
@@ -79,7 +89,7 @@ public class BundleUtil {
 
         for (BundleProperty property : properties) {
             //jsonArray.put(property.toJson());
-            jsonObject.put(property.artifactId,property.toJson());
+            jsonObject.put(property.artifactId, property.toJson());
         }
 
         return jsonObject.toString();
@@ -104,7 +114,7 @@ public class BundleUtil {
                 for (int j = 0; j < nodeChilds.getLength(); j++) {
                     Node appNode = nodeChilds.item(j);
                     String nodeName = appNode.getNodeName();
-                    if (nodeName.equals("activity") || nodeName.equals("service") || nodeName.equals("receiver")) {
+                    if (nodeName.equals("activity") || nodeName.equals("service") || nodeName.equals("receiver") || nodeName.equals("provider")) {
                         NamedNodeMap attrs = appNode.getAttributes();
 
                         for (int x = 0; x < attrs.getLength(); x++) {
@@ -124,4 +134,38 @@ public class BundleUtil {
         return activities;
     }
 
+    public static byte[] computeMD5Hash(InputStream is) throws IOException {
+        BufferedInputStream bis = new BufferedInputStream(is);
+
+        try {
+            MessageDigest e = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[16384];
+
+            int bytesRead;
+            while ((bytesRead = bis.read(buffer, 0, buffer.length)) != -1) {
+                e.update(buffer, 0, bytesRead);
+            }
+
+            byte[] var5 = e.digest();
+            return var5;
+        } catch (NoSuchAlgorithmException var14) {
+            throw new IllegalStateException(var14);
+        } finally {
+            try {
+                bis.close();
+            } catch (Exception var13) {
+                var13.printStackTrace();
+            }
+
+        }
+    }
+
+
+    public static byte[] computeMD5Hash(File file) throws FileNotFoundException, IOException {
+        return computeMD5Hash((InputStream) (new FileInputStream(file)));
+    }
+
+    public static String md5AsBase64(File file) throws FileNotFoundException, IOException {
+        return java.util.Base64.getEncoder().encodeToString(computeMD5Hash(file));
+    }
 }

@@ -1,4 +1,4 @@
-package com.medusa;
+package com.bundle1;
 
 import android.app.Application;
 import android.content.Context;
@@ -12,15 +12,15 @@ import com.medusa.application.MedusaLisenter;
  */
 public class AppApplication extends Application {
 
-
-
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
+        final long start = System.currentTimeMillis();
         MedusaApplicationProxy.getInstance().attachContext(this, new MedusaLisenter() {
             @Override
             public void onMedusaLoad(MedusaLoadState medusaLoadState) {
-                if(medusaLoadState.progress == 1){
+                if (medusaLoadState.progress == 1) {
+                    System.out.println("finish Medusa with " + (System.currentTimeMillis() - start));
                     setFinishLoad(true);
                     sendBroadcast(new Intent("com.medusa.finishload"));
                 }
@@ -42,4 +42,5 @@ public class AppApplication extends Application {
     public synchronized static boolean isFinishLoad() {
         return finishLoad;
     }
+
 }

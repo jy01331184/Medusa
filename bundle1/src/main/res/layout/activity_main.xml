@@ -8,8 +8,9 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorAccent">
+    <!--android:background="@com.bundle2:color/mshare"-->
 
-    >
     <!--android:background="@android.support.v7:drawable/abc_btn_radio_to_on_mtrl_015"-->
 
     <Button

@@ -1,5 +1,7 @@
 <resources>
 
+    <style name="mshare_style" parent="android:Theme.Holo">
 
+    </style>
 
 </resources>

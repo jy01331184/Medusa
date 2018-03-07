@@ -3,6 +3,8 @@
 <resources>
 
     <!--<public type="drawable" name="ic" id="0x7f020001" />-->
+    <public type="color" name="mshare" id="0x7f040000"></public>
     <public type="drawable" name="add" id="0x7f020000" />
     <public type="attr" name="banner"  id="0x7f010000" />
+    <public type="style" name="mshare_style" id="0x7f070000"></public>
 </resources>

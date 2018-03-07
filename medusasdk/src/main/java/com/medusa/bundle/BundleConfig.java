@@ -1,7 +1,5 @@
 package com.medusa.bundle;
 
-import com.medusa.application.MedusaBundle;
-
 import java.util.HashMap;
 import java.util.Map;
 
