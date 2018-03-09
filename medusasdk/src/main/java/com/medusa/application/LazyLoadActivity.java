@@ -29,7 +29,7 @@ public class LazyLoadActivity extends BundleActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.log("LazyLoadActivity", "LazyLoadActivity onCreate");
+        Log.info("LazyLoadActivity", "LazyLoadActivity onCreate");
         setContentView(R.layout.lazy);
         startTime = System.currentTimeMillis();
         waitValue = getIntent().getStringExtra(KEY);

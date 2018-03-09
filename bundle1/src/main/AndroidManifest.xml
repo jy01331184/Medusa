@@ -26,7 +26,7 @@
 
         </activity>
         <service android:name=".Bundle1Service"></service>
-        <receiver android:name=".Bundle1Receiver">
+        <receiver android:name=".Bundle1Receiver" android:process=":bundle1">
             <intent-filter >
                 <action android:name="android.intent.action.LOCALE_CHANGED"></action>
             </intent-filter>

@@ -45,7 +45,7 @@ public class BundleManager {
         File dexOptFile = Constant.getDexOptFile(bundle);
         if (dexOptFile != null)
             dexOptFile.delete();
-        Log.log("BundleManager", "remove bundle:" + removeBundle);
+        Log.info("BundleManager", "remove bundle:" + removeBundle);
     }
 
     public Bundle queryBundleByBundleName(String bundleName) {
@@ -116,15 +116,10 @@ public class BundleManager {
         }
     }
 
-    public void disableConfig() {
-        bundleConfig.sourceMd5 = "";
-        save();
-    }
-
     private void save() {
         File file = Constant.getPluginInfoFile();
         FileUtil.writeToFileAsync(file, bundleConfig);
-        Log.log("BundleManager", "async save bundle info to " + file.getAbsolutePath());
+        Log.info("BundleManager", "async save bundle info to " + file.getAbsolutePath());
     }
 
     public boolean load() {
@@ -138,7 +133,7 @@ public class BundleManager {
             if (bundleConfig.bundles == null) {
                 bundleConfig.bundles = new HashMap<>();
             }
-            Log.log("BundleManager", "load bundle info from " + file.getAbsolutePath() + " use " + (System.currentTimeMillis() - start));
+            Log.info("BundleManager", "load bundle info from " + file.getAbsolutePath() + " use " + (System.currentTimeMillis() - start));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -154,7 +149,7 @@ public class BundleManager {
         if (TextUtils.equals(sourceMd5, bundleConfig.sourceMd5))
             return false;
 
-        Log.log("BundleManager", "apk md5 changes from:" + bundleConfig.sourceMd5 + " to " + sourceMd5);
+        Log.info("BundleManager", "apk md5 changes from:" + bundleConfig.sourceMd5 + " to " + sourceMd5);
 
         Map<String, Bundle> dict = BundleUtil.generateBundleDict();
 
@@ -185,10 +180,10 @@ public class BundleManager {
                     File dexOptFile = Constant.getDexOptFile(bundle);
                     if (dexOptFile != null && dexOptFile.exists()) {
                         dexOptFile.delete();
-                        Log.log("BundleManager", "delete old bundle dex" + dexOptFile.getAbsolutePath());
+                        Log.info("BundleManager", "delete old bundle dex" + dexOptFile.getAbsolutePath());
                     }
 
-                    Log.log("BundleManager", "update bundle " + bundle.artifactId + ":" + bundle.version + " to " + bundleInAsset.version);
+                    Log.info("BundleManager", "update bundle " + bundle.artifactId + ":" + bundle.version + " to " + bundleInAsset.version);
                     BundleUtil.syncBundle(assetBundleFile, bundle);
                     bundle.path = bundleInAsset.path;
                     change = true;
@@ -201,7 +196,7 @@ public class BundleManager {
         Collection<Bundle> leftValues = dict.values();
         //新增bundle
         for (Bundle tempBundle : leftValues) {
-            Log.log("BundleManager", "add new bundle " + tempBundle.artifactId + ":" + tempBundle.version);
+            Log.info("BundleManager", "add new bundle " + tempBundle.artifactId + ":" + tempBundle.version);
             bundleConfig.bundles.put(tempBundle.artifactId, tempBundle);
             File originBundleFile = Constant.getBundleFile(tempBundle);
             BundleUtil.syncBundle(originBundleFile, tempBundle);

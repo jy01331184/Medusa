@@ -53,7 +53,7 @@ public class MedusaInstrumentation extends Instrumentation {
 //        {
 //            if(execStartActivity == null)
 //                initMethod();
-////            Log.log(this,"hook startActivity :"+target);
+////            Log.info(this,"hook startActivity :"+target);
 //
 //            return (ActivityResult) execStartActivity.invoke(mBase, who, contextThread, token, target, intent, requestCode, options);
 //        }

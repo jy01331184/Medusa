@@ -15,3 +15,9 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-dontoptimize
+
+-keep class * extends com.medusa.application.MedusaBundle{
+    public <fields>;
+    public <methods>;
+}

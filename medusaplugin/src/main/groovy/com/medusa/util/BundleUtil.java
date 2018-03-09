@@ -27,6 +27,8 @@ import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import sun.misc.BASE64Encoder;
+
 /**
  * Created by tianyang on 16/8/10.
  */
@@ -166,6 +168,10 @@ public class BundleUtil {
     }
 
     public static String md5AsBase64(File file) throws FileNotFoundException, IOException {
-        return java.util.Base64.getEncoder().encodeToString(computeMD5Hash(file));
+
+        BASE64Encoder base64Encoder = new BASE64Encoder();
+        String str = base64Encoder.encode(computeMD5Hash(file));
+
+        return str;
     }
 }

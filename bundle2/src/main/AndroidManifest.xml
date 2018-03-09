@@ -14,8 +14,8 @@
         <!--<activity android:name=".Bundle2Activity2">-->
 
         <!--</activity>-->
-        <provider android:name=".Bundle2Provider" android:authorities="com.bundle2"
-                  android:exported="true"></provider>
+        <!--<provider android:name=".Bundle2Provider" android:authorities="com.bundle2"-->
+                  <!--android:exported="true"></provider>-->
     </application>
 
 </manifest>

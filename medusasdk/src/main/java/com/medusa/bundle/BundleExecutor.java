@@ -93,12 +93,12 @@ public class BundleExecutor extends ThreadPoolExecutor {
             if (bundleInLoadingLocal.get().contains(bundle)) {
                 return;
             }
-            //Log.log(this, "enter :" + bundle.artifactId);
+            //Log.info(this, "enter :" + bundle.artifactId);
             bundleInLoadingLocal.get().add(bundle);
             long time = System.currentTimeMillis();
             File bundleFile = Constant.getBundleFile(bundle);
 //            if (!BundleUtil.copyBundleFile(bundle, bundleFile)) {
-//                Log.log(this, "copy bundle fail :" + bundleFile);
+//                Log.info(this, "copy bundle fail :" + bundleFile);
 //                BundleManager.getInstance().disableConfig();
 //                lisenter.onBundleLoad(bundle.artifactId, false);
 //                return;
@@ -131,7 +131,7 @@ public class BundleExecutor extends ThreadPoolExecutor {
 
             bundleInLoadingLocal.get().remove(bundle);
             medusaBundlesLocal.get().add(bundle);
-            Log.log(this, "finish bundle load :" + bundle + "  use " + (System.currentTimeMillis() - time) + "ms");
+            Log.info(this, "finish bundle load :" + bundle + "  use " + (System.currentTimeMillis() - time) + "ms");
             lisenter.onBundleLoad(bundle.artifactId, true);
             if (bundleInLoadingLocal.get().isEmpty()) {
                 executeMedusaBundles();

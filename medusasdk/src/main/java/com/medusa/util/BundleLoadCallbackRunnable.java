@@ -36,7 +36,6 @@ public class BundleLoadCallbackRunnable extends BundleLoadRunnable {
             intent.putExtra(LazyLoadActivity.KEY_MEDUSA_BUNDLE_PARAM, param);
             intent.putExtra(LazyLoadActivity.KEY, lazyWaitValue);
             MedusaAgent.getInstance().getApplication().sendStickyBroadcast(intent);
-            System.out.println("after send:"+System.currentTimeMillis());
         } catch (Exception e) {
             e.printStackTrace();
         }

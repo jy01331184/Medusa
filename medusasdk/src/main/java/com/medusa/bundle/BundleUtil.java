@@ -206,7 +206,7 @@ public class BundleUtil {
         if (bundle != null) {
             ReflectUtil.replaceResource(context, bundle.resources);
             //File bundleFile = new File(Constant.getPluginDir(), BundleUtil.getBundleFileName(bundle));
-//            Log.log("BundleUtil","replace res:"+bundle.resources+"-"+bundleFile.exists());
+//            Log.info("BundleUtil","replace res:"+bundle.resources+"-"+bundleFile.exists());
 //            if (bundleFile.exists()) {
 //
 //            }
@@ -243,7 +243,7 @@ public class BundleUtil {
             if (!bundleFile.exists()) {
                 File file = new File(MedusaApplicationProxy.getInstance().getApplication().getApplicationInfo().nativeLibraryDir + "/" + bundle.path);
                 FileUtil.copyFile(new FileInputStream(file).getChannel(), bundleFile.getAbsolutePath());
-                Log.log("BundleManager", "copy bundle " + bundle.artifactId + " to" + bundleFile.getAbsolutePath());
+                Log.info("BundleManager", "copy bundle " + bundle.artifactId + " to" + bundleFile.getAbsolutePath());
             }
             return true;
         } catch (Exception e) {

@@ -42,9 +42,14 @@ public class Bundle {
     public String toString() {
         return "Bundle{" +
                 "artifactId='" + artifactId + '\'' +
+                ", groupId='" + groupId + '\'' +
                 ", version='" + version + '\'' +
                 ", path='" + path + '\'' +
+                ", exportPackages=" + exportPackages +
                 ", dependencies=" + dependencies +
+                ", medusaBundles=" + medusaBundles +
+                ", activities=" + activities +
+                ", slink=" + slink +
                 ", priority=" + priority +
                 '}';
     }

@@ -9,6 +9,7 @@ import com.medusa.bundle.BundleExecutor;
 import com.medusa.bundle.BundleManager;
 import com.medusa.classloader.MedusaClassLoader;
 import com.medusa.util.Log;
+import com.medusa.util.ProcessLock;
 import com.medusa.util.ReflectUtil;
 
 import java.util.Collection;
@@ -41,7 +42,7 @@ public class MedusaApplicationProxy extends MedusaAgent {
     public void attachContext(Application application, MedusaLisenter lisenter) {
         this.application = application;
         this.lisenter = lisenter;
-        Log.log("MedusaApplicationProxy", "attachContext");
+        Log.info("MedusaApplicationProxy", "attachContext");
         if (setUpClassLoader()) {
             initBundles();
         } else {
@@ -116,6 +117,8 @@ public class MedusaApplicationProxy extends MedusaAgent {
     }
 
     private void initBundles() {
+        ProcessLock processLock = new ProcessLock(getApplication().getCacheDir().getAbsolutePath() + "/init_bundle");
+        processLock.lock();
         if (!BundleManager.getInstance().load()) {
             BundleManager.getInstance().init();
         }
@@ -136,6 +139,7 @@ public class MedusaApplicationProxy extends MedusaAgent {
 
             BundleManager.getInstance().initBundleClassLoader(classLoader, lisenter);
         }
+        processLock.unlock();
     }
 
     private static class MedusaBundleConfig {

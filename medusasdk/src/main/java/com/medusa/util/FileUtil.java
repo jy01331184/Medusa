@@ -113,17 +113,11 @@ public class FileUtil {
     }
 
     public static void writeToFileAsync(final File file, final BundleConfig bundleConfig) {
-        new Thread() {
-            @Override
-            public void run() {
-
-                String str = JSON.toJSONString(bundleConfig);
-                File tempFile = new File(file.getParentFile().getAbsolutePath() + "/" + file.getName() + ".bak");
-                if (writeToFile(tempFile, str)) {
-                    tempFile.renameTo(file);
-                    Log.log("FileUtil", "writeToFileAsync to " + file.getAbsolutePath());
-                }
-            }
-        }.start();
+        String str = JSON.toJSONString(bundleConfig);
+        File tempFile = new File(file.getParentFile().getAbsolutePath() + "/" + file.getName() + ".bak");
+        if (writeToFile(tempFile, str)) {
+            tempFile.renameTo(file);
+            Log.info("FileUtil", "writeToFileAsync to " + file.getAbsolutePath());
+        }
     }
 }

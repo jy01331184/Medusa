@@ -71,7 +71,7 @@ public class MedusaClassLoader extends ClassLoader {
                     } else {
                         synchronized (bundle.loaded) {
                             if ((!bundle.loaded || bundle.classLoader == null)) {
-                                Log.log("MedusaClassLoader", "hard load bundle:" + bundle.artifactId + " for class:" + className);
+                                Log.info("MedusaClassLoader", "hard load bundle:" + bundle.artifactId + " for class:" + className);
                                 bundleExecutor.loadBundle(this, bundle, MedusaApplicationProxy.getInstance().getLisenter());
                                 if (bundle.classLoader != null && bundle.loaded) {
                                     clazz = bundle.classLoader.loadClass(className);
@@ -91,7 +91,7 @@ public class MedusaClassLoader extends ClassLoader {
             }
         }
 
-        //Log.log("med",className+" :" + clazz);
+        //Log.info("med",className+" :" + clazz);
         if (null == clazz) {
             throw mDefaultException;
         }

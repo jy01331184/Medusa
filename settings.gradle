@@ -1,5 +1,5 @@
-include ':medusaplugin'
+include ':medusaplugin',':app',':medusasdk',":bundle1"
 //include 'medusaplugin',,':enigma', ':wallettestplugin', ':wallettestsdk'':app', ':medusasdk', ':medusaplugin',
 //include ':app', ':medusaplugin', ,':app',':aredis', ':aredis_test',':huskartest',':app',
-//, ,, ':techsdk', ':medusasdk',,":techsdk", ':techplugin', ':bundle1'':enigma', ':enigmaplugin',
+//, ,, ':techsdk', ,":techsdk", ':techplugin', ':bundle1'':enigma', ':enigmaplugin',
 //':huskarsdk', ': huskarplugin', , ':huskarpatch'  ':medusaplugin', ':rpc',':medusasdk',
