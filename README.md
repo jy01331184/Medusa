@@ -40,7 +40,7 @@
     </tr>
     <tr>
       <td>medusa sdk</td>
-      <td>sdk</td>
+      <td>sdk bundle</td>
       <td>包含bundle、classloader等一系列插件化功能支撑</td>
     </tr>
     <tr>
